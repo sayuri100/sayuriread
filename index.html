@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old Books Note - 古典书斋笔记系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5c4033;
+            --secondary-color: #d4c4b7;
+            --bg-color: #faf8f5;
+            --text-color: #3e2723;
+            --border-color: #e0d6cc;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+        }
+        .nav-item {
+            padding: 12px 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            border-right: 3px solid var(--primary-color);
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .top-bar {
+            height: var(--header-height);
+            background: #fff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+        .user-panel {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            color: var(--text-color);
+        }
+        .btn:hover { background: var(--secondary-color); }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: #4a3429; }
+        .content-area {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="none" width="100" height="100"/><path d="M20,20 Q40,5 60,20 T100,20 M20,50 Q40,35 60,50 T100,50 M20,80 Q40,65 60,80 T100,80" stroke="%23e0d6cc" stroke-width="0.5" fill="none"/></svg>') repeat;
+        }
+        .module {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .module.active { display: block; }
+        h2 {
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            color: var(--primary-color);
+        }
+        .controls { margin-bottom: 20px; display: flex; gap: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: left; vertical-align: top; }
+        th { background: var(--secondary-color); font-weight: bold; }
+        tr:nth-child(even) { background: #fcfbfa; }
+        input[type="text"], input[type="number"] {
+            border: 1px solid var(--border-color);
+            padding: 6px 8px;
+            width: 100%;
+            font-family: inherit;
+            background: #fff;
+        }
+        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+        .plan-container { display: flex; gap: 30px; }
+        .goal-box { flex: 1; background: #fff8f0; padding: 20px; border: 2px dashed var(--secondary-color); border-radius: 8px; }
+        .calendar-container { flex: 2; }
+        .timeline-section { margin-top: 30px; }
+        .timeline-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .timeline-time { width: 100px; border: 1px solid var(--border-color); padding: 5px; background: #fafafa; }
+        .timeline-task { flex: 1; display: flex; align-items: center; gap: 10px; }
+        .timeline-checkbox { margin: 0; }
+        .note-editor { border: 1px solid var(--border-color); min-height: 400px; padding: 20px; background: #fff; line-height: 1.8; outline: none; }
+        .note-editor:focus { border-color: var(--primary-color); }
+        .tag-hint { color: #999; font-style: italic; margin-top: 5px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .close { float: right; cursor: pointer; font-size: 24px; color: #999; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input#username, input#password { width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: inherit; }
+        #login-page { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background: var(--bg-color); 
+            border: none; 
+            box-shadow: none; 
+        }
+        .login-box { text-align: center; background: white; padding: 40px; border-radius: 8px; border: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+    <div id="login-page" class="module active">
+        <div class="login-box">
+            <h2>📚 Old Books Note</h2>
+            <p>古典书斋笔记系统</p>
+            <div class="form-group" style="margin-top: 30px;">
+                <input type="text" id="username" placeholder="请输入用户名" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="请输入密码">
+            </div>
+            <button class="btn btn-primary" onclick="handleLogin()" style="width: 100%; margin-top: 20px;">进入书斋</button>
+            <p style="font-size: 12px; color: #999; margin-top: 15px;">* 每个新用户名会自动创建独立账户，数据隔离</p>
+        </div>
+    </div>
+
+    <div id="app-container" style="display: none; width: 100%; height: 100%;">
+        <div class="sidebar">
+            <div class="logo">OLD BOOKS</div>
+            <div class="nav-item active" onclick="showModule('notes-module')">📝 已读笔记</div>
+            <div class="nav-item" onclick="showModule('plan-module')">📅 阅读计划</div>
+            <div class="nav-item" onclick="showModule('reading-module')">✍️ 阅读笔记</div>
+            <div style="margin-top: auto; padding: 20px; font-size: 12px; color: #999; text-align: center;">
+                数据独立存储
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-bar">
+                <h1 style="font-size: 1.5rem; color: var(--primary-color);">古典书斋笔记系统</h1>
+                <div class="user-panel">
+                    <span id="current-user-display">欢迎，访客</span>
+                    <button class="btn" onclick="logout()">退出</button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div id="notes-module" class="module">
+                    <h2>📊 已读笔记管理</h2>
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="addNewRow()">➕ 新增记录</button>
+                        <button class="btn" onclick="exportToExcel()">📥 导出 Excel</button>
+                        <label class="btn" for="import-file" style="margin-bottom: 0;">📤 导入 Excel</label>
+                        <input type="file" id="import-file" accept=".xlsx, .xls" style="display:none;" onchange="importFromExcel(event)">
+                        <button class="btn" onclick="clearAllData()">🗑️ 清空记录</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>题目</th>
+                                    <th>年份</th>
+                                    <th>作者</th>
+                                    <th>期刊</th>
+                                    <th>主题</th>
+                                    <th>理论方法</th>
+                                    <th>研究问题</th>
+                                    <th>结论</th>
+                                    <th>展望</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notes-table-body">
+                                <!-- 动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="color: #999; font-size: 12px; margin-top: 10px;">提示：点击单元格可直接编辑，修改后数据会自动暂存。</p>
+                </div>
+
+                <div id="plan-module" class="module">
+                    <h2>📅 阅读计划与追踪</h2>
+                    <div class="plan-container">
+                        <div class="goal-box">
+                            <h3>🎯 大目标 (Big Goal)</h3>
+                            <textarea id="big-goal-input" style="width: 100%; height: 150px; border: 1px dashed #ccc; padding: 10px; font-family: inherit; background: #fff;" placeholder="在这里写下你今年的宏伟阅读目标..."></textarea>
+                            <button class="btn btn-primary" onclick="saveGoal()" style="margin-top: 10px;">保存目标</button>
+                        </div>
+                        <div class="calendar-container">
+                            <div id="calendar" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                    <div class="timeline-section">
+                        <h3>⏳ 今日阅读时间轴</h3>
+                        <div id="timeline-container"></div>
+                        <button class="btn" onclick="addTimelineItem()">➕ 添加时间点</button>
+                    </div>
+                </div>
+
+                <div id="reading-module" class="module">
+                    <h2>✍️ 深度阅读笔记</h2>
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="exportToWord()">📄 导出 Word (.docx)</button>
+                    </div>
+                    <div class="note-editor" contenteditable="true" id="note-editor" oninput="autoSaveNote()">
+                        <strong>一、大纲：</strong>
+1. 命题（核心论点）
+2. 问题意识
+3. 论证路径
+4. 核心概念
+
+<strong>二、论证：</strong>
+1. 章节+页码
+2. 论点
+3. 论证步骤
+4. 论据/例子
+5. 连接
+6. 批注
+
+<strong>三、引用</strong>
+1. 关键原文
+2. 启发性文段
+3. 可能会用上
+4. 解读
+
+<span class="tag-hint">💡 提示：请在上述文本结构中输入您的笔记内容，系统会识别标签并格式化导出。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.4.1/build/index.js"></script>
+    
+    <script>
+        let currentUser = null;
+        let calendarInstance = null;
+        const STORAGE_KEY = "reading_notes_data";
+
+        function getDefaultUserData() {
+            return {
+                notes: [],
+                goal: "",
+                timeline: [],
+                readingNotes: ""
+            };
+        }
+
+        function getUserStorageKey() {
+            if (!currentUser) return null;
+            return `${STORAGE_KEY}_${btoa(currentUser.username)}`;
+        }
+
+        function getUserData() {
+            const key = getUserStorageKey();
+            if (!key) return getDefaultUserData();
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : getDefaultUserData();
+        }
+
+        function saveUserData(data) {
+            const key = getUserStorageKey();
+            if (key) localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            if (!username || !password) {
+                alert("请填写用户名和密码");
+                return;
+            }
+            currentUser = { username, password };
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            document.getElementById('current-user-display').innerText = `欢迎，${username}`;
+            loadUserData();
+            initCalendar();
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function showModule(moduleId) {
+            document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(moduleId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            if (moduleId === 'plan-module' && !calendarInstance) initCalendar();
+        }
+
+        function addNewRow() {
+            const data = getUserData();
+            data.notes.push({
+                题目: "", 年份: "", 作者: "", 期刊: "", 主题: "", 
+                理论方法: "", 研究问题: "", 结论: "", 展望: ""
+            });
+            saveUserData(data);
+            renderNotesTable();
+        }
+
+        function renderNotesTable() {
+            const data = getUserData();
+            const tbody = document.getElementById('notes-table-body');
+            tbody.innerHTML = '';
+            data.notes.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                Object.keys(row).forEach(key => {
+                    const td = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = row[key];
+                    input.onchange = (e) => updateNoteCell(index, key, e.target.value);
+                    td.appendChild(input);
+                    tr.appendChild(td);
+                });
+                const tdAction = document.createElement('td');
+                const delBtn = document.createElement('button');
+                delBtn.innerText = '❌';
+                delBtn.className = 'btn';
+                delBtn.style.padding = '2px 8px';
+                delBtn.onclick = () => deleteNoteRow(index);
+                tdAction.appendChild(delBtn);
+                tr.appendChild(tdAction);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateNoteCell(rowIndex, columnName, value) {
+            const data = getUserData();
+            if (data.notes[rowIndex]) {
+                data.notes[rowIndex][columnName] = value;
+                saveUserData(data);
+            }
+        }
+
+        function deleteNoteRow(index) {
+            if (confirm('确定要删除这条记录吗？')) {
+                const data = getUserData();
+                data.notes.splice(index, 1);
+                saveUserData(data);
+                renderNotesTable();
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('警告：这将清空当前账户的所有已读笔记数据，且不可恢复！确定吗？')) {
+                const data = getUserData();
+                data.notes = [];
+                saveUserData(data);
+                renderNotesTable();
+            }
+        }
+
+        function exportToExcel() {
+            const data = getUserData();
+            if (data.notes.length === 0) {
+                alert("没有数据可导出");
+                return;
+            }
+            const ws_data = [
+                ["题目", "年份", "作者", "期刊", "主题", "理论方法", "研究问题", "结论", "展望"]
+            ];
+            data.notes.forEach(note => {
+                ws_data.push([
+                    note.题目, note.年份, note.作者, note.期刊, note.主题,
+                    note.理论方法, note.研究问题, note.结论, note.展望
+                ]);
+            });
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "已读笔记");
+            XLSX.writeFile(wb, `已读笔记_${currentUser.username}_${new Date().toLocaleDateString()}.xlsx`);
+        }
+
+        function importFromExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                if (jsonData.length > 0) {
+                    const userData = getUserData();
+                    userData.notes = jsonData.map(row => ({
+                        题目: row["题目"] || row["Title"] || "",
+                        年份: row["年份"] || row["Year"] || "",
+                        作者: row["作者"] || row["Author"] || "",
+                        期刊: row["期刊"] || row["Journal"] || "",
+                        主题: row["主题"] || row["Subject"] || "",
+                        理论方法: row["理论方法"] || row["Method"] || "",
+                        研究问题: row["研究问题"] || row["Question"] || "",
+                        结论: row["结论"] || row["Conclusion"] || "",
+                        展望: row["展望"] || row["Future"] || ""
+                    }));
+                    saveUserData(userData);
+                    renderNotesTable();
+                    alert(`成功导入 ${jsonData.length} 条记录`);
+                } else {
+                    alert("Excel 文件中未找到有效数据");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function saveGoal() {
+            const goal = document.getElementById('big-goal-input').value;
+            const data = getUserData();
+            data.goal = goal;
+            saveUserData(data);
+            alert("目标已保存！");
+        }
+
+        function initCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            if (calendarInstance) return;
+            calendarInstance = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                locale: 'zh-cn',
+                headerToolbar: false,
+                selectable: true,
+                events: []
+            });
+            calendarInstance.render();
+        }
+
+        function addTimelineItem() {
+            const container = document.getElementById('timeline-container');
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'timeline-item';
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            itemDiv.innerHTML = `
+                <input type="text" class="timeline-time" placeholder="HH:MM" value="${hours}:${minutes}">
+                <div class="timeline-task">
+                    <input type="text" placeholder="阅读内容/书名 (如：Pride and Prejudice 第5章)" style="border: none; flex:1; outline:none; background:transparent;">
+                    <input type="text" placeholder="页数" style="width: 60px; border: 1px solid #eee; padding: 2px;">
+                    <input type="checkbox" class="timeline-checkbox">
+                </div>
+                <button class="btn" onclick="this.parentElement.remove()">❌</button>
+            `;
+            container.appendChild(itemDiv);
+            saveTimeline();
+        }
+
+        function saveTimeline() {
+            const items = document.querySelectorAll('#timeline-container .timeline-item');
+            const timeline = [];
+            items.forEach(item => {
+                const time = item.querySelector('.timeline-time').value;
+                const taskInput = item.querySelector('.timeline-task input[type="text"]:not([placeholder*="页数"])');
+                const pageInput = item.querySelector('.timeline-task input[placeholder="页数"]');
+                const done = item.querySelector('.timeline-checkbox').checked;
+                timeline.push({
+                    time,
+                    task: taskInput ? taskInput.value : "",
+                    pages: pageInput ? pageInput.value : "",
+                    done
+                });
+            });
+            const data = getUserData();
+            data.timeline = timeline;
+            saveUserData(data);
+        }
+
+        function autoSaveNote() {
+            const content = document.getElementById('note-editor').innerHTML;
+            const data = getUserData();
+            data.readingNotes = content;
+            saveUserData(data);
+        }
+
+        function exportToWord() {
+            const data = getUserData();
+            if (!data.readingNotes.trim()) {
+                alert("笔记内容为空，无法导出");
+                return;
+            }
+            const { Document, Packer, Paragraph, TextRun, HeadingLevel } = window.docx;
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        new Paragraph({
+                            text: "深度阅读笔记",
+                            heading: HeadingLevel.HEADING_1
+                        }),
+                        new Paragraph({
+                            text: `导出时间：${new Date().toLocaleString()}`,
+                            spacing: { after: 200 }
+                        })
+                    ]
+                }]
+            });
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = data.readingNotes;
+            const children = Array.from(tempDiv.childNodes);
+            let currentSection = null;
+            let inSection = false;
+            children.forEach(node => {
+                if (node.nodeType === 1) {
+                    const tagName = node.tagName.toLowerCase();
+                    if (tagName === 'strong' || node.style.fontWeight === 'bold') {
+                        const sectionTitle = node.innerText.replace('：', '').trim();
+                        if (sectionTitle.startsWith('一、')) currentSection = 'outline';
+                        else if (sectionTitle.startsWith('二、')) currentSection = 'argument';
+                        else if (sectionTitle.startsWith('三、')) currentSection = 'quote';
+                        inSection = true;
+                        doc.addSection({
+                            properties: {},
+                            children: [
+                                new Paragraph({
+                                    text: node.innerText,
+                                    heading: HeadingLevel.HEADING_2,
+                                    spacing: { before: 200, after: 100 }
+                                })
+                            ]
+                        });
+                    } else if (inSection) {
+                        if (node.innerText.trim().startsWith('1.') || node.innerText.trim().startsWith('2.') || node.innerText.trim().startsWith('3.') || node.innerText.trim().startsWith('4.') || node.innerText.trim().startsWith('5.') || node.innerText.trim().startsWith('6.')) {
+                            const text = node.innerText.replace(/^\d+\.\s*/, '');
+                            doc.addSection({
+                                properties: {},
+                                children: [
+                                    new Paragraph({
+                                        children: [
+                                            new TextRun({ text: '  • ', font: { name: 'Times New Roman' } }),
+                                            new TextRun({ text: text, font: { name: 'Times New Roman' } })
+                                        ],
+                                        spacing: { after: 50 }
+                                    })
+                                ]
+                            });
+                        }
+                    }
+                }
+            });
+            if (doc.sections.length <= 1) {
+                const lines = data.readingNotes.split('\n');
+                lines.forEach(line => {
+                    if (line.trim()) {
+                        doc.addSection({
+                            properties: {},
+                            children: [
+                                new Paragraph({
+                                    text: line,
+                                    spacing: { after: 100 }
+                                })
+                            ]
+                        });
+                    }
+                });
+            }
+            Packer.toBlob(doc).then(blob => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `阅读笔记_${currentUser.username}_${new Date().toLocaleDateString()}.docx`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+
+        function loadUserData() {
+            const data = getUserData();
+            renderNotesTable();
+            document.getElementById('big-goal-input').value = data.goal || '';
+            renderTimeline(data.timeline);
+            if (data.readingNotes) {
+                document.getElementById('note-editor').innerHTML = data.readingNotes;
+            }
+        }
+
+        function renderTimeline(timeline) {
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = '';
+            timeline.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'timeline-item';
+                itemDiv.innerHTML = `
+                    <input type="text" class="timeline-time" value="${item.time}" onchange="saveTimeline()">
+                    <div class="timeline-task">
+                        <input type="text" value="${item.task}" placeholder="阅读内容/书名" style="border: none; flex:1; outline:none; background:transparent;" onchange="saveTimeline()">
+                        <input type="text" value="${item.pages}" placeholder="页数" style="width: 60px; border: 1px solid #eee; padding: 2px;" onchange="saveTimeline()">
+                        <input type="checkbox" class="timeline-checkbox" ${item.done ? 'checked' : ''} onchange="saveTimeline()">
+                    </div>
+                    <button class="btn" onclick="this.parentElement.remove(); saveTimeline()">❌</button>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+    </script>
+</body>
+</html>
