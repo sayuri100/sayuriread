@@ -358,6 +358,18 @@ input[type="checkbox"]{
 .book-info-item.full-width {
     grid-column: 1 / -1;
 }
+.quote-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+}
+.quote-vertical-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
 
 /*===阅读计划时间轴(文档1功能，应用文档2样式)===*/
 .plan-container{
@@ -542,6 +554,26 @@ input[type="checkbox"]{
     background-color: var(--bg-secondary);
     color: var(--text-primary);
 }
+.quote-textarea {
+    width:100%;
+    min-height:120px;
+    padding:10px;
+    border:1px solid var(--border-color);
+    border-radius:4px;
+    font-family: inherit;
+    resize: vertical;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+.quote-input {
+    width:100%;
+    padding:10px;
+    border:1px solid var(--border-color);
+    border-radius:4px;
+    font-family: inherit;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
 
 /*===自定义滚动条(取自文档2)===*/
 ::-webkit-scrollbar{
@@ -622,7 +654,7 @@ input[type="checkbox"]{
 <!--主应用界面(文档1原内容)-->
 <div id="app-container" style="display:none; width:100%; height:100%;">
     <div class="sidebar">
-        <div class="logo">OLD BOOKS</div>
+        <div class="logo">MY BOOKS</div>
         <div class="nav-item active" onclick="showModule('notes-module')">已读笔记</div>
         <div class="nav-item" onclick="showModule('plan-module')">阅读计划</div>
         <div class="nav-item" onclick="showModule('reading-module')">读书笔记</div>
@@ -771,22 +803,8 @@ input[type="checkbox"]{
                     <div class="note-section">
                         <div class="section-header">三、引用</div>
                         <div class="section-content">
-                            <div class="section-item">
-                                <span class="item-title">1.关键原文</span>
-                                <textarea class="item-input" data-tag="引用-关键原文" placeholder="输入关键原文..."></textarea>
-                            </div>
-                            <div class="section-item">
-                                <span class="item-title">2.启发性文段</span>
-                                <textarea class="item-input" data-tag="引用-启发性文段" placeholder="输入启发性文段..."></textarea>
-                            </div>
-                            <div class="section-item">
-                                <span class="item-title">3.可能会用上</span>
-                                <textarea class="item-input" data-tag="引用-可能会用上" placeholder="输入可能用到的引用..."></textarea>
-                            </div>
-                            <div class="section-item">
-                                <span class="item-title">4.解读</span>
-                                <textarea class="item-input" data-tag="引用-解读" placeholder="输入对原文的解读..."></textarea>
-                            </div>
+                            <div id="quote-notes"></div>
+                            <button class="btn" onclick="addQuoteItem()" style="margin-top:10px;">+添加引用项</button>
                         </div>
                     </div>
                     <p class="tag-hint">提示:在对应区域输入笔记内容,系统会自动保存。导出Word时会按照标签结构格式化。</p>
@@ -965,7 +983,7 @@ function getDefaultUserData() {
             bookInfo: { title: "", author: "", publisher: "", year: "", isbn: "" },
             outline: { proposition: "", problem: "", method: "", concept: "" },
             arguments: [],
-            quotes: { key: "", inspiration: "", maybeUse: "", interpretation: "" }
+            quotes: []
         }
     };
 }
@@ -1355,6 +1373,35 @@ function addArgumentItem() {
     saveReadingNotes();
 }
 
+function addQuoteItem() {
+    const container = document.getElementById('quote-notes');
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'quote-container';
+    itemDiv.innerHTML = `
+        <div class="quote-vertical-group">
+            <div>
+                <div class="item-title">引用原文</div>
+                <textarea class="quote-textarea quote-content" placeholder="输入引用的原文内容" onchange="saveReadingNotes()"></textarea>
+            </div>
+            <div>
+                <div class="item-title">引用页码/章节</div>
+                <input type="text" class="quote-input quote-page" placeholder="输入页码或章节" onchange="saveReadingNotes()">
+            </div>
+            <div>
+                <div class="item-title">解读与分析</div>
+                <textarea class="quote-textarea quote-analysis" placeholder="输入对引用内容的解读和分析" onchange="saveReadingNotes()"></textarea>
+            </div>
+            <div>
+                <div class="item-title">关联论证项</div>
+                <input type="text" class="quote-input quote-relation" placeholder="输入关联的论证项编号" onchange="saveReadingNotes()">
+            </div>
+        </div>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveReadingNotes();" style="margin-top:10px;">删除此项</button>
+    `;
+    container.appendChild(itemDiv);
+    saveReadingNotes();
+}
+
 function saveReadingNotes() {
     const data = getUserData();
     data.readingNotes = {
@@ -1372,14 +1419,10 @@ function saveReadingNotes() {
             concept: document.querySelector('textarea[data-tag="大纲-核心概念"]').value
         },
         arguments: [],
-        quotes: {
-            key: document.querySelector('textarea[data-tag="引用-关键原文"]').value,
-            inspiration: document.querySelector('textarea[data-tag="引用-启发性文段"]').value,
-            maybeUse: document.querySelector('textarea[data-tag="引用-可能会用上"]').value,
-            interpretation: document.querySelector('textarea[data-tag="引用-解读"]').value
-        }
+        quotes: []
     };
     
+    // 保存论证项
     document.querySelectorAll('.argument-container').forEach(item => {
         data.readingNotes.arguments.push({
             chapter: item.querySelector('.argument-chapter').value,
@@ -1388,6 +1431,16 @@ function saveReadingNotes() {
             evidence: item.querySelector('.argument-evidence').value,
             connection: item.querySelector('.argument-connection').value,
             comment: item.querySelector('.argument-comment').value
+        });
+    });
+    
+    // 保存引用项
+    document.querySelectorAll('.quote-container').forEach(item => {
+        data.readingNotes.quotes.push({
+            content: item.querySelector('.quote-content').value,
+            page: item.querySelector('.quote-page').value,
+            analysis: item.querySelector('.quote-analysis').value,
+            relation: item.querySelector('.quote-relation').value
         });
     });
     
@@ -1414,14 +1467,7 @@ function loadReadingNotes() {
         document.querySelector('textarea[data-tag="大纲-核心概念"]').value = data.outline.concept || '';
     }
     
-    // 加载引用
-    if (data.quotes) {
-        document.querySelector('textarea[data-tag="引用-关键原文"]').value = data.quotes.key || '';
-        document.querySelector('textarea[data-tag="引用-启发性文段"]').value = data.quotes.inspiration || '';
-        document.querySelector('textarea[data-tag="引用-可能会用上"]').value = data.quotes.maybeUse || '';
-        document.querySelector('textarea[data-tag="引用-解读"]').value = data.quotes.interpretation || '';
-    }
-    
+    // 加载论证项
     const argumentContainer = document.getElementById('argument-notes');
     argumentContainer.innerHTML = '';
     
@@ -1463,6 +1509,41 @@ function loadReadingNotes() {
     } else {
         addArgumentItem();
     }
+    
+    // 加载引用项
+    const quoteContainer = document.getElementById('quote-notes');
+    quoteContainer.innerHTML = '';
+    
+    if (data.quotes && data.quotes.length > 0) {
+        data.quotes.forEach((quote, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'quote-container';
+            itemDiv.innerHTML = `
+                <div class="quote-vertical-group">
+                    <div>
+                        <div class="item-title">引用原文</div>
+                        <textarea class="quote-textarea quote-content" placeholder="输入引用的原文内容" onchange="saveReadingNotes()">${quote.content || ''}</textarea>
+                    </div>
+                    <div>
+                        <div class="item-title">引用页码/章节</div>
+                        <input type="text" class="quote-input quote-page" value="${quote.page || ''}" placeholder="输入页码或章节" onchange="saveReadingNotes()">
+                    </div>
+                    <div>
+                        <div class="item-title">解读与分析</div>
+                        <textarea class="quote-textarea quote-analysis" placeholder="输入对引用内容的解读和分析" onchange="saveReadingNotes()">${quote.analysis || ''}</textarea>
+                    </div>
+                    <div>
+                        <div class="item-title">关联论证项</div>
+                        <input type="text" class="quote-input quote-relation" value="${quote.relation || ''}" placeholder="输入关联的论证项编号" onchange="saveReadingNotes()">
+                    </div>
+                </div>
+                <button class="delete-btn" onclick="this.parentElement.remove(); saveReadingNotes();" style="margin-top:10px;">删除此项</button>
+            `;
+            quoteContainer.appendChild(itemDiv);
+        });
+    } else {
+        addQuoteItem();
+    }
 }
 
 function clearNote() {
@@ -1472,7 +1553,7 @@ function clearNote() {
             bookInfo: { title: "", author: "", publisher: "", year: "", isbn: "" },
             outline: { proposition: "", problem: "", method: "", concept: "" },
             arguments: [],
-            quotes: { key: "", inspiration: "", maybeUse: "", interpretation: "" }
+            quotes: []
         };
         saveUserData(data);
         loadReadingNotes();
@@ -1614,40 +1695,59 @@ async function exportToWord() {
         });
     });
     
-    doc.addSection({
-        properties: {},
-        children: [
-            new Paragraph({ text: "三、引用", heading: HeadingLevel.HEADING_1 }),
-            new Paragraph({ 
+    // 添加引用部分
+    if (data.quotes && data.quotes.length > 0) {
+        doc.addSection({
+            properties: {},
+            children: [
+                new Paragraph({ text: "三、引用", heading: HeadingLevel.HEADING_1 })
+            ]
+        });
+        
+        data.quotes.forEach((quote, index) => {
+            doc.addSection({
+                properties: {},
                 children: [
-                    new TextRun({ text: "1.关键原文", bold: true }),
-                    new TextRun({ text: `\n${data.quotes.key || ""}` })
-                ], 
-                spacing: { after: 200 }
-            }),
-            new Paragraph({ 
-                children: [
-                    new TextRun({ text: "2.启发性文段", bold: true }),
-                    new TextRun({ text: `\n${data.quotes.inspiration || ""}` })
-                ], 
-                spacing: { after: 200 }
-            }),
-            new Paragraph({ 
-                children: [
-                    new TextRun({ text: "3.可能会用上", bold: true }),
-                    new TextRun({ text: `\n${data.quotes.maybeUse || ""}` })
-                ], 
-                spacing: { after: 200 }
-            }),
-            new Paragraph({ 
-                children: [
-                    new TextRun({ text: "4.解读", bold: true }),
-                    new TextRun({ text: `\n${data.quotes.interpretation || ""}` })
-                ], 
-                spacing: { after: 200 }
-            })
-        ]
-    });
+                    new Paragraph({ 
+                        children: [
+                            new TextRun({ text: `${index + 1}.引用:`, bold: true }),
+                            new TextRun({ text: ` ${quote.page ? `(页码: ${quote.page})` : ''}` })
+                        ], 
+                        spacing: { after: 100 }
+                    }),
+                    new Paragraph({ 
+                        children: [
+                            new TextRun({ text: "原文:", bold: true }),
+                            new TextRun({ text: `\n${quote.content || ""}` })
+                        ], 
+                        spacing: { after: 100 }
+                    }),
+                    new Paragraph({ 
+                        children: [
+                            new TextRun({ text: "解读与分析:", bold: true }),
+                            new TextRun({ text: `\n${quote.analysis || ""}` })
+                        ], 
+                        spacing: { after: 100 }
+                    }),
+                    new Paragraph({ 
+                        children: [
+                            new TextRun({ text: "关联论证项:", bold: true }),
+                            new TextRun({ text: ` ${quote.relation || "无关联论证项"}` })
+                        ], 
+                        spacing: { after: 200 }
+                    })
+                ]
+            });
+        });
+    } else {
+        doc.addSection({
+            properties: {},
+            children: [
+                new Paragraph({ text: "三、引用", heading: HeadingLevel.HEADING_1 }),
+                new Paragraph({ text: "（暂无引用内容）", spacing: { after: 200 } })
+            ]
+        });
+    }
     
     try {
         const blob = await Packer.toBlob(doc);
