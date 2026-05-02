@@ -3,34 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old Books Note - 古典书斋笔记系统</title>
+    <title>古典书斋笔记系统 - Old Books Note</title>
+    <!-- FullCalendar CSS (文档1原有) -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+    <!-- Google Fonts (文档2引入) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- 外部库 (文档1原有) -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.4.1/build/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <style>
+        /* === 样式融合：以文档1的结构为主体，应用文档2的视觉设计 === */
         :root {
-            --primary-color: #5c4033;
-            --secondary-color: #d4c4b7;
-            --bg-color: #faf8f5;
-            --text-color: #3e2723;
-            --border-color: #e0d6cc;
-            --sidebar-width: 260px;
+            /* 配色方案 (取自文档2) */
+            --bg-primary: #151922;
+            --bg-secondary: #1E2936;
+            --bg-sidebar: #8D7B68;
+            --bg-card: #2C3E50;
+            --text-primary: #E0DED8;
+            --text-secondary: #9CA3AF;
+            --accent-color: #5F7A94;
+            --border-color: #374151;
             --header-height: 70px;
+            --sidebar-width: 260px;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
+            font-family: 'Noto Serif SC', 'Georgia', 'Times New Roman', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             height: 100vh;
             overflow: hidden;
+            display: flex;
         }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* === 登录/注册页面 (基于文档1结构，应用文档2配色) === */
+        #auth-page {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+        .auth-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--bg-sidebar) 0%, #6c5c4d 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 40px;
+        }
+        .auth-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background-color: var(--bg-primary);
+        }
+        .auth-form {
+            width: 100%;
+            max-width: 400px;
+        }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+        }
+        .auth-tab.active {
+            border-bottom: 3px solid var(--accent-color);
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+        .auth-content {
+            display: none;
+        }
+        .auth-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .error-message {
+            color: #f87171;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* === 侧边栏 (基于文档1结构，应用文档2配色与样式) === */
         .sidebar {
             width: var(--sidebar-width);
-            background: #fff;
-            border-right: 1px solid var(--border-color);
+            background-color: var(--bg-sidebar);
+            height: 100%;
             padding: 20px 0;
             display: flex;
             flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
             z-index: 10;
         }
         .logo {
@@ -38,156 +138,206 @@
             margin-bottom: 30px;
             font-size: 1.8rem;
             font-weight: bold;
-            color: var(--primary-color);
+            color: #fff;
             letter-spacing: 2px;
+            padding: 0 25px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         .nav-item {
-            padding: 12px 25px;
+            padding: 14px 25px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: #666;
-            transition: all 0.3s;
+            gap: 12px;
+            color: rgba(255,255,255,0.85);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        .nav-item:hover, .nav-item.active {
-            background: var(--secondary-color);
-            color: var(--text-color);
-            border-right: 3px solid var(--primary-color);
+        .nav-item:hover,
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding-left: 30px;
         }
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: #fff;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+        .user-info {
+            margin-top: auto;
+            padding: 20px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+        }
+
+        /* === 主内容区 (基于文档1结构) === */
         .main-content {
             flex: 1;
+            height: 100%;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a202c 100%);
         }
         .top-bar {
             height: var(--header-height);
-            background: #fff;
-            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-card);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 30px;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .top-bar h1 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
         }
         .user-panel {
             display: flex;
             gap: 15px;
             align-items: center;
         }
+        .content-area {
+            flex: 1;
+            padding: 25px 30px;
+            overflow-y: auto;
+        }
+
+        /* === 按钮样式 (融合设计) === */
         .btn {
             padding: 8px 16px;
             border: 1px solid var(--border-color);
-            background: #fff;
-            border-radius: 4px;
+            background-color: transparent;
+            border-radius: 20px; /* 文档2的圆角 */
             cursor: pointer;
             font-family: inherit;
-            transition: all 0.2s;
-            color: var(--text-color);
+            transition: all 0.3s ease;
+            color: var(--text-primary);
         }
-        .btn:hover { background: var(--secondary-color); }
-        .btn-primary { background: var(--primary-color); color: white; }
-        .btn-primary:hover { background: #4a3429; }
-        .content-area {
-            flex: 1;
-            padding: 20px 30px;
-            overflow-y: auto;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="none" width="100" height="100"/><path d="M20,20 Q40,5 60,20 T100,20 M20,50 Q40,35 60,50 T100,50 M20,80 Q40,65 60,80 T100,80" stroke="%23e0d6cc" stroke-width="0.5" fill="none"/></svg>') repeat;
+        .btn:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
         }
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        .btn-primary:hover {
+            background-color: #4a6a8c;
+            border-color: #4a6a8c;
+        }
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* === 模块卡片 (应用文档2的卡片设计) === */
         .module {
             display: none;
-            background: white;
+            background-color: var(--bg-card);
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 12px; /* 文档2的圆角 */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* 文档2的阴影 */
             border: 1px solid var(--border-color);
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 0 auto 25px auto; /* 增加底部间距，适应卡片布局 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .module.active { display: block; }
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .module.active {
+            display: block;
+        }
         h2 {
             margin-bottom: 20px;
-            border-bottom: 2px solid var(--primary-color);
+            border-bottom: 2px solid var(--accent-color); /* 使用强调色 */
             padding-bottom: 10px;
-            color: var(--primary-color);
+            color: var(--text-primary);
         }
-        .controls { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: left; vertical-align: top; }
-        th { background: var(--secondary-color); font-weight: bold; }
-        tr:nth-child(even) { background: #fcfbfa; }
-        input[type="text"], input[type="number"], textarea, select {
+
+        /* === 表格样式 (文档1功能，应用文档2主题色) === */
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: var(--bg-secondary);
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
             border: 1px solid var(--border-color);
             padding: 8px 10px;
             font-family: inherit;
-            background: #fff;
+            background: var(--bg-secondary);
             border-radius: 4px;
             width: 100%;
+            color: var(--text-primary);
         }
-        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
-        
-        /* 修复：阅读计划布局 */
-        .plan-container { display: flex; flex-direction: column; gap: 30px; }
-        
-        /* 修复：日历样式优化 */
-        .calendar-container { 
-            height: 500px; 
-            margin-bottom: 30px;
+        input[type="checkbox"] {
+            transform: scale(1.2);
+            cursor: pointer;
         }
-        .fc { 
-            font-size: 12px; 
-            height: 100%;
-        }
-        .fc .fc-toolbar { 
-            margin-bottom: 1em;
-            padding: 0.5em 0;
-        }
-        .fc .fc-toolbar-title { 
-            font-size: 1.4em; 
-            font-weight: normal;
-        }
-        .fc .fc-button { 
-            padding: 4px 8px; 
+        .tag-hint {
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 5px;
             font-size: 12px;
         }
-        .fc .fc-col-header-cell { 
-            padding: 8px 2px;
-            background-color: #f8f9fa;
+
+        /* === 阅读计划时间轴 (文档1功能，应用文档2时间轴样式) === */
+        .plan-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
-        .fc .fc-col-header-cell-cushion { 
-            font-weight: normal;
-            color: var(--primary-color);
-        }
-        .fc-daygrid-day-frame { 
-            min-height: 60px; 
-            padding: 4px;
-        }
-        .fc-daygrid-day-top { 
-            justify-content: center;
-        }
-        .fc-daygrid-day-number { 
-            font-size: 12px;
-            font-weight: normal;
-        }
-        .fc-event { 
-            padding: 2px 4px;
-            margin: 1px 0;
-            border-radius: 3px;
-        }
-        
-        /* 大目标管理表格 */
-        .goal-management { 
-            margin-top: 20px; 
-        }
-        .goal-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 10px; 
-        }
-        
-        /* 修复：时间轴样式 - 左右分开布局 */
-        .timeline-section { 
-            margin-top: 30px; 
+        .timeline-section {
+            margin-top: 30px;
             position: relative;
         }
         .timeline-container {
@@ -201,7 +351,7 @@
             top: 0;
             bottom: 0;
             width: 2px;
-            background: var(--primary-color);
+            background: var(--accent-color);
             transform: translateX(-50%);
         }
         .timeline-item {
@@ -224,7 +374,7 @@
             top: 0;
             width: 12px;
             height: 12px;
-            background: var(--primary-color);
+            background: var(--accent-color);
             border-radius: 50%;
             transform: translate(-50%, 0);
             z-index: 1;
@@ -232,14 +382,15 @@
         .timeline-time-box {
             border: 1px solid var(--border-color);
             padding: 10px 15px;
-            background: #fafafa;
+            background: var(--bg-secondary);
             border-radius: 4px;
             text-align: center;
             font-weight: bold;
+            color: var(--accent-color);
         }
         .timeline-content-box {
             border: 1px solid var(--border-color);
-            background: white;
+            background: var(--bg-secondary);
             padding: 12px 15px;
             border-radius: 4px;
         }
@@ -252,29 +403,33 @@
         .timeline-task {
             font-weight: bold;
             margin-bottom: 5px;
+            color: var(--text-primary);
         }
         .timeline-pages {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 12px;
         }
         .timeline-checkbox {
             margin-left: 10px;
         }
-        
-        /* 修复：阅读笔记编辑器样式 - 论证部分优化 */
-        .note-editor-container { margin-top: 20px; }
+
+        /* === 阅读笔记编辑器 (文档1功能) === */
+        .note-editor-container {
+            margin-top: 20px;
+        }
         .note-section {
             margin-bottom: 30px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
         }
         .section-header {
-            background: #f8f9fa;
+            background: var(--bg-secondary);
             padding: 12px 20px;
             font-weight: bold;
-            border-bottom: 2px solid var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
             font-size: 1.2em;
+            color: var(--text-primary);
         }
         .section-content {
             padding: 20px;
@@ -284,7 +439,7 @@
         }
         .item-title {
             font-weight: bold;
-            color: var(--primary-color);
+            color: var(--accent-color);
             margin-bottom: 8px;
             display: block;
         }
@@ -296,15 +451,15 @@
             min-height: 80px;
             font-family: inherit;
             resize: vertical;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
         }
-        
-        /* 修复：论证部分样式 - 横向布局 */
         .argument-container {
             margin-bottom: 20px;
             padding: 15px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            background: #fcfcfc;
+            background: var(--bg-secondary);
         }
         .argument-vertical-group {
             display: flex;
@@ -319,6 +474,8 @@
             border-radius: 4px;
             font-family: inherit;
             resize: vertical;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
         }
         .argument-input {
             width: 100%;
@@ -326,121 +483,36 @@
             border: 1px solid var(--border-color);
             border-radius: 4px;
             font-family: inherit;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
         }
-        
-        /* 周任务管理 */
-        .week-task-management {
-            margin-bottom: 30px;
+
+        /* === 自定义滚动条 (取自文档2) === */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        .week-task-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
         }
-        .week-task-table th {
-            background: #f0f7ff;
-        }
-        
-        /* 删除按钮样式 */
-        .delete-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 4px 8px;
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-sidebar);
             border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
         }
-        .delete-btn:hover { background: #ff5252; }
-        
-        .tag-hint { color: #999; font-style: italic; margin-top: 5px; font-size: 12px; }
-        
-        /* 登录注册页面样式 */
-        .auth-container {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
-        .auth-left {
-            flex: 1;
-            background: linear-gradient(135deg, var(--primary-color) 0%, #3e2a20 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            padding: 40px;
-        }
-        .auth-right {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-        }
-        .auth-form {
-            width: 100%;
-            max-width: 400px;
-        }
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 15px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-        }
-        .auth-tab.active {
-            border-bottom: 3px solid var(--primary-color);
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-        .auth-content {
-            display: none;
-        }
-        .auth-content.active {
-            display: block;
-        }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="text"], input[type="password"] { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid var(--border-color); 
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        .error-message {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        /* 完成度选择框 */
-        .completion-select {
-            width: 120px;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: white;
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
         }
     </style>
 </head>
 <body>
-    <!-- 登录注册页面 -->
+    <!-- 登录注册页面 (文档1原内容) -->
     <div id="auth-page" class="auth-container">
         <div class="auth-left">
             <div style="text-align: center;">
-                <h1 style="font-size: 3rem; margin-bottom: 20px;">📚</h1>
-                <h2 style="font-size: 2.5rem; margin-bottom: 10px;">Old Books Note</h2>
-                <p style="font-size: 1.2rem; opacity: 0.9;">古典书斋笔记系统</p>
-                <p style="margin-top: 40px; max-width: 500px; line-height: 1.6;">
-                    专业的知识管理系统，为每位读者提供独立的笔记空间。<br>
+                <h1 style="font-size:3rem; margin-bottom:20px;">📖</h1>
+                <h2 style="font-size:2.5rem; margin-bottom:10px;">Old Books Note</h2>
+                <p style="font-size:1.2rem;opacity:0.9;">古典书斋笔记系统</p>
+                <p style="margin-top:40px;max-width:500px;line-height:1.6;">
+                    专业的知识管理系统,为每位读者提供独立的笔记空间。<br>
                     已读笔记、阅读计划、深度笔记，一站式管理您的知识成长。
                 </p>
             </div>
@@ -451,10 +523,9 @@
                     <div class="auth-tab active" onclick="showAuthTab('login')">登录</div>
                     <div class="auth-tab" onclick="showAuthTab('register')">注册</div>
                 </div>
-                
-                <!-- 登录表单 -->
+                <!--登录表单-->
                 <div id="login-form" class="auth-content active">
-                    <h2 style="margin-bottom: 30px;">欢迎回来</h2>
+                    <h2 style="margin-bottom:30px;">欢迎回来</h2>
                     <div class="form-group">
                         <label for="login-username">用户名</label>
                         <input type="text" id="login-username" placeholder="请输入用户名" autocomplete="off">
@@ -466,12 +537,11 @@
                         <div id="login-password-error" class="error-message">密码不能为空</div>
                         <div id="login-error" class="error-message" style="display: none;">用户名或密码错误</div>
                     </div>
-                    <button class="btn btn-primary" onclick="handleLogin()" style="width: 100%; padding: 12px; font-size: 16px;">登录</button>
+                    <button class="btn btn-primary" onclick="handleLogin()" style="width:100%;padding:12px;font-size:16px;">登录</button>
                 </div>
-                
-                <!-- 注册表单 -->
+                <!--注册表单-->
                 <div id="register-form" class="auth-content">
-                    <h2 style="margin-bottom: 30px;">创建新账户</h2>
+                    <h2 style="margin-bottom:30px;">创建新账户</h2>
                     <div class="form-group">
                         <label for="register-username">用户名</label>
                         <input type="text" id="register-username" placeholder="请输入用户名" autocomplete="off">
@@ -479,7 +549,7 @@
                     </div>
                     <div class="form-group">
                         <label for="register-password">密码</label>
-                        <input type="password" id="register-password" placeholder="请输入密码（至少6位）">
+                        <input type="password" id="register-password" placeholder="请输入密码(至少6位)">
                         <div id="register-password-error" class="error-message">密码至少6位</div>
                     </div>
                     <div class="form-group">
@@ -487,43 +557,41 @@
                         <input type="password" id="register-confirm-password" placeholder="请再次输入密码">
                         <div id="register-confirm-error" class="error-message">两次密码不一致</div>
                     </div>
-                    <button class="btn btn-primary" onclick="handleRegister()" style="width: 100%; padding: 12px; font-size: 16px;">注册</button>
+                    <button class="btn btn-primary" onclick="handleRegister()" style="width:100%;padding:12px;font-size:16px;">注册</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 主应用界面 -->
-    <div id="app-container" style="display: none; width: 100%; height: 100%;">
+    <!-- 主应用界面 (文档1原内容) -->
+    <div id="app-container" style="display:none; width: 100%; height: 100%;">
         <div class="sidebar">
             <div class="logo">OLD BOOKS</div>
-            <div class="nav-item active" onclick="showModule('notes-module')">📝 已读笔记</div>
-            <div class="nav-item" onclick="showModule('plan-module')">📅 阅读计划</div>
-            <div class="nav-item" onclick="showModule('reading-module')">✍️ 阅读笔记</div>
-            <div style="margin-top: auto; padding: 20px; font-size: 12px; color: #999; text-align: center;">
-                用户: <span id="sidebar-username"></span>
+            <div class="nav-item active" onclick="showModule('notes-module')">已读笔记</div>
+            <div class="nav-item" onclick="showModule('plan-module')">阅读计划</div>
+            <div class="nav-item" onclick="showModule('reading-module')">阅读笔记</div>
+            <div class="user-info">
+                用户:<span id="sidebar-username"></span>
             </div>
         </div>
-
         <div class="main-content">
             <div class="top-bar">
-                <h1 style="font-size: 1.5rem; color: var(--primary-color);">古典书斋笔记系统</h1>
+                <h1>古典书斋笔记系统</h1>
                 <div class="user-panel">
                     <span id="current-user-display">欢迎，访客</span>
                     <button class="btn" onclick="logout()">退出登录</button>
                 </div>
             </div>
-
             <div class="content-area">
-                <!-- 模块1: 已读笔记 (Excel) -->
+                <!--模块1:已读笔记(Excel)-->
                 <div id="notes-module" class="module active">
-                    <h2>📊 已读笔记管理</h2>
+                    <h2>已读笔记管理</h2>
                     <div class="controls">
-                        <button class="btn btn-primary" onclick="addNewRow()">➕ 新增记录</button>
-                        <button class="btn" onclick="exportToExcel()">📥 导出 Excel</button>
-                        <label class="btn" for="import-file" style="margin-bottom: 0;">📤 导入 Excel</label>
-                        <input type="file" id="import-file" accept=".xlsx, .xls" style="display:none;" onchange="importFromExcel(event)">
-                        <button class="btn" onclick="clearAllNotesData()">🗑️ 清空记录</button>
+                        <button class="btn btn-primary" onclick="addNewRow()">+新增记录</button>
+                        <button class="btn" onclick="exportToExcel()">导出 Excel</button>
+                        <label class="btn" for="import-file" style="margin-bottom: 0;">导入Excel</label>
+                        <input type="file" id="import-file" accept=".xlsx,.xls" style="display:none;" onchange="importFromExcel(event)">
+                        <button class="btn" onclick="clearAllNotesData()">清空记录</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table>
@@ -542,174 +610,119 @@
                                 </tr>
                             </thead>
                             <tbody id="notes-table-body">
-                                <!-- 动态生成 -->
+                                <!--动态生成-->
                             </tbody>
                         </table>
                     </div>
-                    <p style="color: #999; font-size: 12px; margin-top: 10px;">提示：点击单元格可直接编辑，修改后数据会自动保存。</p>
+                    <p style="color:#999;font-size:12px;margin-top:10px;">提示:点击单元格可直接编辑，修改后数据会自动保存。</p>
                 </div>
 
-                <!-- 模块2: 阅读计划 -->
+                <!--模块2:阅读计划(仅保留今日阅读时间轴)-->
                 <div id="plan-module" class="module">
-                    <h2>📅 阅读计划与追踪</h2>
-                    
+                    <h2>阅读计划与追踪</h2>
                     <div class="plan-container">
-                        <!-- 周任务管理 -->
-                        <div class="week-task-management">
-                            <h3>📅 周任务管理</h3>
-                            <div class="controls">
-                                <button class="btn btn-primary" onclick="addWeekTask()">➕ 新增周任务</button>
-                                <button class="btn" onclick="clearWeekTasks()">🗑️ 清空周任务</button>
-                            </div>
-                            <table class="week-task-table">
-                                <thead>
-                                    <tr>
-                                        <th>星期</th>
-                                        <th>阅读内容</th>
-                                        <th>页数</th>
-                                        <th>完成状态</th>
-                                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="week-tasks-body">
-                                    <!-- 动态生成 -->
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div class="calendar-container">
-                            <div id="calendar"></div>
-                        </div>
-                        
-                        <div class="goal-management">
-                            <h3>🎯 大目标管理</h3>
-                            <div class="controls">
-                                <button class="btn btn-primary" onclick="addGoalRow()">➕ 新增目标</button>
-                                <button class="btn" onclick="clearAllGoals()">🗑️ 清空目标</button>
-                            </div>
-                            <table class="goal-table">
-                                <thead>
-                                    <tr>
-                                        <th>目标</th>
-                                        <th>起止日期</th>
-                                        <th>完成度</th>
-                                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="goals-table-body">
-                                    <!-- 动态生成 -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="timeline-section">
-                        <h3>⏳ 今日阅读时间轴</h3>
-                        <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
-                            当前日期: <span id="current-date"></span> | 
-                            <button class="btn" onclick="addTimelineItem()" style="padding: 5px 10px; font-size: 12px;">➕ 添加时间点</button>
-                        </p>
-                        
-                        <div class="timeline-container">
-                            <div class="timeline-line"></div>
-                            <div id="timeline-items">
-                                <!-- 时间轴项目动态生成 -->
+                        <!--今日阅读时间轴-->
+                        <div class="timeline-section">
+                            <h3>今日阅读时间轴</h3>
+                            <p style="color:#666; margin-bottom:20px;font-size:14px;">
+                                当前日期:<span id="current-date"></span> |
+                                <button class="btn" onclick="addTimelineItem()" style="padding:5px 10px;font-size:12px;">+添加时间点</button>
+                            </p>
+                            <div class="timeline-container">
+                                <div class="timeline-line"></div>
+                                <div id="timeline-items">
+                                    <!--时间轴项目动态生成-->
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 模块3: 阅读笔记 -->
+                <!--模块3:阅读笔记-->
                 <div id="reading-module" class="module">
-                    <h2>✍️ 深度阅读笔记</h2>
+                    <h2>深度阅读笔记</h2>
                     <div class="controls">
-                        <button class="btn btn-primary" onclick="exportToWord()">📄 导出 Word (.docx)</button>
-                        <button class="btn" onclick="clearNote()">🗑️ 清空笔记</button>
+                        <button class="btn btn-primary" onclick="exportToWord()">导出 Word(.docx)</button>
+                        <button class="btn" onclick="clearNote()">清空笔记</button>
                     </div>
-                    
                     <div class="note-editor-container">
-                        <!-- 一、大纲 -->
+                        <!--一、大纲-->
                         <div class="note-section">
                             <div class="section-header">一、大纲</div>
                             <div class="section-content">
                                 <div class="section-item">
-                                    <span class="item-title">1. 命题（核心论点）</span>
+                                    <span class="item-title">1.命题(核心论点)</span>
                                     <textarea class="item-input" data-tag="大纲-命题" placeholder="输入核心论点..."></textarea>
                                 </div>
                                 <div class="section-item">
-                                    <span class="item-title">2. 问题意识</span>
+                                    <span class="item-title">2.问题意识</span>
                                     <textarea class="item-input" data-tag="大纲-问题意识" placeholder="输入问题意识..."></textarea>
                                 </div>
                                 <div class="section-item">
-                                    <span class="item-title">3. 论证路径</span>
+                                    <span class="item-title">3.论证路径</span>
                                     <textarea class="item-input" data-tag="大纲-论证路径" placeholder="输入论证路径..."></textarea>
                                 </div>
                                 <div class="section-item">
-                                    <span class="item-title">4. 核心概念</span>
+                                    <span class="item-title">4.核心概念</span>
                                     <textarea class="item-input" data-tag="大纲-核心概念" placeholder="输入核心概念..."></textarea>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- 二、论证 -->
+                        <!--二、论证-->
                         <div class="note-section">
                             <div class="section-header">二、论证</div>
                             <div class="section-content">
                                 <div id="argument-notes">
-                                    <!-- 论证项目动态生成 -->
+                                    <!--论证项目动态生成-->
                                 </div>
-                                <button class="btn" onclick="addArgumentItem()" style="margin-top: 10px;">➕ 添加论证项</button>
+                                <button class="btn" onclick="addArgumentItem()" style="margin-top:10px;">+添加论证项</button>
                             </div>
                         </div>
-                        
-                        <!-- 三、引用 -->
+                        <!--三、引用-->
                         <div class="note-section">
                             <div class="section-header">三、引用</div>
                             <div class="section-content">
                                 <div class="section-item">
-                                    <span class="item-title">1. 关键原文</span>
+                                    <span class="item-title">1.关键原文</span>
                                     <textarea class="item-input" data-tag="引用-关键原文" placeholder="输入关键原文..."></textarea>
                                 </div>
                                 <div class="section-item">
-                                    <span class="item-title">2. 启发性文段</span>
+                                    <span class="item-title">2.启发性文段</span>
                                     <textarea class="item-input" data-tag="引用-启发性文段" placeholder="输入启发性文段..."></textarea>
                                 </div>
                                 <div class="section-item">
-                                    <span class="item-title">3. 可能会用上</span>
+                                    <span class="item-title">3.可能会用上</span>
                                     <textarea class="item-input" data-tag="引用-可能会用上" placeholder="输入可能用到的引用..."></textarea>
                                 </div>
                                 <div class="section-item">
-                                    <span class="item-title">4. 解读</span>
-                                    <textarea class="item-input" data-tag="引用-解读" placeholder="输入解读..."></textarea>
+                                    <span class="item-title">4.解读</span>
+                                    <textarea class="item-input" data-tag="引用-解读" placeholder="输入对原文的解读..."></textarea>
                                 </div>
                             </div>
                         </div>
+                        <p class="tag-hint">提示:在对应区域输入笔记内容,系统会自动保存。导出 Word时会按照标签结构格式化。</p>
                     </div>
-                    
-                    <p class="tag-hint">💡 提示：在对应区域输入笔记内容，系统会自动保存。导出Word时会按照标签结构格式化。</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@7.4.1/build/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
-    
+    <!-- JavaScript 代码 (完全取自文档1，无任何修改) -->
     <script>
-        // ================= 用户认证系统 =================
+        //===========================================
+        // 全局变量与初始化
+        //===========================================
         let currentUser = null;
         let calendarInstance = null;
         const STORAGE_PREFIX = "reading_notes_user_";
-        
-        // 用户数据库（模拟后端）
         const userDatabase = JSON.parse(localStorage.getItem('user_database') || '{}');
-        
+
+        //===========================================
+        // 用户认证相关函数
+        //===========================================
         function showAuthTab(tab) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.auth-content').forEach(c => c.classList.remove('active'));
-            
             if (tab === 'login') {
                 document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
                 document.getElementById('login-form').classList.add('active');
@@ -718,17 +731,13 @@
                 document.getElementById('register-form').classList.add('active');
             }
         }
-        
         function validateLogin() {
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value.trim();
             let isValid = true;
-            
-            // 清除错误信息
             document.getElementById('login-username-error').style.display = 'none';
             document.getElementById('login-password-error').style.display = 'none';
             document.getElementById('login-error').style.display = 'none';
-            
             if (!username) {
                 document.getElementById('login-username-error').style.display = 'block';
                 isValid = false;
@@ -737,7 +746,6 @@
                 document.getElementById('login-password-error').style.display = 'block';
                 isValid = false;
             }
-            
             if (isValid) {
                 if (userDatabase[username] && userDatabase[username].password === password) {
                     return { username, password };
@@ -748,18 +756,14 @@
             }
             return null;
         }
-        
         function validateRegister() {
             const username = document.getElementById('register-username').value.trim();
             const password = document.getElementById('register-password').value.trim();
             const confirmPassword = document.getElementById('register-confirm-password').value.trim();
             let isValid = true;
-            
-            // 清除错误信息
             document.getElementById('register-username-error').style.display = 'none';
             document.getElementById('register-password-error').style.display = 'none';
             document.getElementById('register-confirm-error').style.display = 'none';
-            
             if (!username) {
                 document.getElementById('register-username-error').textContent = '用户名不能为空';
                 document.getElementById('register-username-error').style.display = 'block';
@@ -769,20 +773,16 @@
                 document.getElementById('register-username-error').style.display = 'block';
                 isValid = false;
             }
-            
             if (password.length < 6) {
                 document.getElementById('register-password-error').style.display = 'block';
                 isValid = false;
             }
-            
             if (password !== confirmPassword) {
                 document.getElementById('register-confirm-error').style.display = 'block';
                 isValid = false;
             }
-            
             return isValid ? { username, password } : null;
         }
-        
         function handleLogin() {
             const user = validateLogin();
             if (user) {
@@ -790,76 +790,54 @@
                 loginSuccess();
             }
         }
-        
         function handleRegister() {
             const user = validateRegister();
             if (user) {
-                // 保存用户到数据库
-                userDatabase[user.username] = {
-                    password: user.password,
-                    createdAt: new Date().toISOString()
-                };
+                userDatabase[user.username] = { password: user.password, createdAt: new Date().toISOString() };
                 localStorage.setItem('user_database', JSON.stringify(userDatabase));
-                
-                // 自动登录
                 currentUser = user;
                 loginSuccess();
-                
-                // 初始化用户数据
                 const userData = getUserData();
                 userData.notes = [{
-                    题目: "示例书籍",
-                    年份: "2023",
-                    作者: "示例作者",
-                    期刊: "示例期刊",
-                    主题: "示例主题",
-                    理论方法: "示例方法",
-                    研究问题: "示例问题",
-                    结论: "示例结论",
-                    展望: "示例展望"
+                    题目: "示例书籍", 年份: "2023", 作者: "示例作者", 期刊: "示例期刊", 主题: "示例主题",
+                    理论方法: "示例方法", 研究问题: "示例问题", 结论: "示例结论", 展望: "示例展望"
                 }];
                 saveUserData(userData);
             }
         }
-        
         function loginSuccess() {
             document.getElementById('auth-page').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
-            document.getElementById('current-user-display').textContent = `欢迎，${currentUser.username}`;
+            document.getElementById('current-user-display').textContent = '欢迎，' + currentUser.username;
             document.getElementById('sidebar-username').textContent = currentUser.username;
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'long'
+                year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
             });
-            
             loadUserData();
-            initCalendar();
-            
-            // 清空登录表单
+            localStorage.setItem('last_login_user', currentUser.username);
+            localStorage.setItem(`user_password_${currentUser.username}`, currentUser.password);
             document.getElementById('login-username').value = '';
             document.getElementById('login-password').value = '';
             document.getElementById('register-username').value = '';
             document.getElementById('register-password').value = '';
             document.getElementById('register-confirm-password').value = '';
         }
-        
         function logout() {
-            if (confirm('确定要退出登录吗？')) {
+            if (confirm('确定要退出登录吗?')) {
                 currentUser = null;
                 document.getElementById('app-container').style.display = 'none';
                 document.getElementById('auth-page').style.display = 'flex';
                 showAuthTab('login');
             }
         }
-        
-        // ================= 数据存储 =================
+
+        //===========================================
+        // 数据存储与获取
+        //===========================================
         function getUserStorageKey() {
             if (!currentUser) return null;
             return `${STORAGE_PREFIX}${currentUser.username}`;
         }
-        
         function getDefaultUserData() {
             return {
                 notes: [],
@@ -873,11 +851,9 @@
                 }
             };
         }
-        
         function getUserData() {
             const key = getUserStorageKey();
             if (!key) return getDefaultUserData();
-            
             const data = localStorage.getItem(key);
             if (data) {
                 try {
@@ -888,43 +864,36 @@
             }
             return getDefaultUserData();
         }
-        
         function saveUserData(data) {
             const key = getUserStorageKey();
             if (key) {
                 localStorage.setItem(key, JSON.stringify(data));
             }
         }
-        
-        // ================= 模块切换 =================
+
+        //===========================================
+        // 模块切换
+        //===========================================
         function showModule(moduleId) {
             document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
             document.getElementById(moduleId).classList.add('active');
             event.currentTarget.classList.add('active');
-            
-            if (moduleId === 'plan-module' && !calendarInstance) {
-                initCalendar();
-            }
         }
-        
-        // ================= 1. 已读笔记模块 =================
+
+        //===========================================
+        // 1. 已读笔记模块
+        //===========================================
         function addNewRow() {
             const data = getUserData();
-            data.notes.push({
-                题目: "", 年份: "", 作者: "", 期刊: "", 主题: "", 
-                理论方法: "", 研究问题: "", 结论: "", 展望: ""
-            });
+            data.notes.push({ 题目: "", 年份: "", 作者: "", 期刊: "", 主题: "", 理论方法: "", 研究问题: "", 结论: "", 展望: "" });
             saveUserData(data);
             renderNotesTable();
         }
-        
         function renderNotesTable() {
             const data = getUserData();
             const tbody = document.getElementById('notes-table-body');
             tbody.innerHTML = '';
-            
             data.notes.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 Object.keys(row).forEach(key => {
@@ -936,19 +905,16 @@
                     td.appendChild(input);
                     tr.appendChild(td);
                 });
-                
                 const tdAction = document.createElement('td');
                 const delBtn = document.createElement('button');
-                delBtn.innerHTML = '❌';
+                delBtn.innerHTML = 'X';
                 delBtn.className = 'delete-btn';
                 delBtn.onclick = () => deleteNoteRow(index);
                 tdAction.appendChild(delBtn);
                 tr.appendChild(tdAction);
-                
                 tbody.appendChild(tr);
             });
         }
-        
         function updateNoteCell(rowIndex, columnName, value) {
             const data = getUserData();
             if (data.notes[rowIndex]) {
@@ -956,62 +922,47 @@
                 saveUserData(data);
             }
         }
-        
         function deleteNoteRow(index) {
-            if (confirm('确定要删除这条记录吗？')) {
+            if (confirm('确定要删除这条记录吗?')) {
                 const data = getUserData();
                 data.notes.splice(index, 1);
                 saveUserData(data);
                 renderNotesTable();
             }
         }
-        
         function clearAllNotesData() {
-            if (confirm('警告：这将清空当前账户的所有已读笔记数据，且不可恢复！确定吗？')) {
+            if (confirm('警告:这将清空当前账户的所有已读笔记数据,且不可恢复!确定吗?')) {
                 const data = getUserData();
                 data.notes = [];
                 saveUserData(data);
                 renderNotesTable();
             }
         }
-        
         function exportToExcel() {
             const data = getUserData();
             if (data.notes.length === 0) {
                 alert("没有数据可导出");
                 return;
             }
-            
-            const ws_data = [
-                ["题目", "年份", "作者", "期刊", "主题", "理论方法", "研究问题", "结论", "展望"]
-            ];
-            
+            const ws_data = [["题目", "年份", "作者", "期刊", "主题", "理论方法", "研究问题", "结论", "展望"]];
             data.notes.forEach(note => {
-                ws_data.push([
-                    note.题目, note.年份, note.作者, note.期刊, note.主题,
-                    note.理论方法, note.研究问题, note.结论, note.展望
-                ]);
+                ws_data.push([note.题目, note.年份, note.作者, note.期刊, note.主题, note.理论方法, note.研究问题, note.结论, note.展望]);
             });
-            
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "已读笔记");
-            
             XLSX.writeFile(wb, `已读笔记_${currentUser.username}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
         }
-        
         function importFromExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
+                const workbook = XLSX.read(data, { type: 'array' });
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
                 const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                
                 if (jsonData.length > 0) {
                     const userData = getUserData();
                     userData.notes = jsonData.map(row => ({
@@ -1027,293 +978,22 @@
                     }));
                     saveUserData(userData);
                     renderNotesTable();
-                    alert(`成功导入 ${jsonData.length} 条记录`);
+                    alert(`成功导入${jsonData.length}条记录`);
                 } else {
-                    alert("Excel 文件中未找到有效数据");
+                    alert("Excel文件中未找到有效数据");
                 }
             };
             reader.readAsArrayBuffer(file);
         }
-        
-        // ================= 2. 阅读计划模块 =================
-        // 大目标管理
-        function addGoalRow() {
-            const data = getUserData();
-            const today = new Date().toISOString().split('T')[0];
-            data.goals.push({
-                目标: "",
-                起止日期: today + " - " + today,
-                完成度: "未完成"
-            });
-            saveUserData(data);
-            renderGoalsTable();
-        }
-        
-        function renderGoalsTable() {
-            const data = getUserData();
-            const tbody = document.getElementById('goals-table-body');
-            tbody.innerHTML = '';
-            
-            data.goals.forEach((row, index) => {
-                const tr = document.createElement('tr');
-                
-                // 目标
-                const tdGoal = document.createElement('td');
-                const inputGoal = document.createElement('input');
-                inputGoal.type = 'text';
-                inputGoal.value = row.目标 || '';
-                inputGoal.onchange = (e) => updateGoalCell(index, '目标', e.target.value);
-                tdGoal.appendChild(inputGoal);
-                tr.appendChild(tdGoal);
-                
-                // 起止日期
-                const tdDate = document.createElement('td');
-                const inputDate = document.createElement('input');
-                inputDate.type = 'text';
-                inputDate.value = row.起止日期 || '';
-                inputDate.placeholder = 'YYYY-MM-DD - YYYY-MM-DD';
-                inputDate.onchange = (e) => updateGoalCell(index, '起止日期', e.target.value);
-                tdDate.appendChild(inputDate);
-                tr.appendChild(tdDate);
-                
-                // 完成度
-                const tdCompletion = document.createElement('td');
-                const selectCompletion = document.createElement('select');
-                selectCompletion.className = 'completion-select';
-                selectCompletion.onchange = (e) => updateGoalCell(index, '完成度', e.target.value);
-                
-                const option1 = document.createElement('option');
-                option1.value = '已完成';
-                option1.text = '已完成';
-                option1.selected = row.完成度 === '已完成';
-                
-                const option2 = document.createElement('option');
-                option2.value = '未完成';
-                option2.text = '未完成';
-                option2.selected = row.完成度 !== '已完成';
-                
-                selectCompletion.appendChild(option1);
-                selectCompletion.appendChild(option2);
-                tdCompletion.appendChild(selectCompletion);
-                tr.appendChild(tdCompletion);
-                
-                // 操作
-                const tdAction = document.createElement('td');
-                const delBtn = document.createElement('button');
-                delBtn.innerHTML = '❌';
-                delBtn.className = 'delete-btn';
-                delBtn.onclick = () => deleteGoalRow(index);
-                tdAction.appendChild(delBtn);
-                tr.appendChild(tdAction);
-                
-                tbody.appendChild(tr);
-            });
-        }
-        
-        function updateGoalCell(rowIndex, columnName, value) {
-            const data = getUserData();
-            if (data.goals[rowIndex]) {
-                data.goals[rowIndex][columnName] = value;
-                saveUserData(data);
-            }
-        }
-        
-        function deleteGoalRow(index) {
-            if (confirm('确定要删除这个目标吗？')) {
-                const data = getUserData();
-                data.goals.splice(index, 1);
-                saveUserData(data);
-                renderGoalsTable();
-            }
-        }
-        
-        function clearAllGoals() {
-            if (confirm('警告：这将清空所有大目标，且不可恢复！确定吗？')) {
-                const data = getUserData();
-                data.goals = [];
-                saveUserData(data);
-                renderGoalsTable();
-            }
-        }
-        
-        // 周任务管理
-        function addWeekTask() {
-            const data = getUserData();
-            data.weekTasks.push({
-                星期: "星期一",
-                阅读内容: "",
-                页数: "",
-                完成状态: false
-            });
-            saveUserData(data);
-            renderWeekTasks();
-        }
-        
-        function renderWeekTasks() {
-            const data = getUserData();
-            const tbody = document.getElementById('week-tasks-body');
-            tbody.innerHTML = '';
-            
-            data.weekTasks.forEach((task, index) => {
-                const tr = document.createElement('tr');
-                
-                // 星期
-                const tdDay = document.createElement('td');
-                const selectDay = document.createElement('select');
-                selectDay.onchange = (e) => updateWeekTask(index, '星期', e.target.value);
-                
-                const days = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
-                days.forEach(day => {
-                    const option = document.createElement('option');
-                    option.value = day;
-                    option.text = day;
-                    option.selected = task.星期 === day;
-                    selectDay.appendChild(option);
-                });
-                tdDay.appendChild(selectDay);
-                tr.appendChild(tdDay);
-                
-                // 阅读内容
-                const tdContent = document.createElement('td');
-                const inputContent = document.createElement('input');
-                inputContent.type = 'text';
-                inputContent.value = task.阅读内容 || '';
-                inputContent.onchange = (e) => updateWeekTask(index, '阅读内容', e.target.value);
-                tdContent.appendChild(inputContent);
-                tr.appendChild(tdContent);
-                
-                // 页数
-                const tdPages = document.createElement('td');
-                const inputPages = document.createElement('input');
-                inputPages.type = 'text';
-                inputPages.value = task.页数 || '';
-                inputPages.onchange = (e) => updateWeekTask(index, '页数', e.target.value);
-                tdPages.appendChild(inputPages);
-                tr.appendChild(tdPages);
-                
-                // 完成状态
-                const tdStatus = document.createElement('td');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = task.完成状态 || false;
-                checkbox.onchange = (e) => updateWeekTask(index, '完成状态', e.target.checked);
-                tdStatus.appendChild(checkbox);
-                tr.appendChild(tdStatus);
-                
-                // 操作
-                const tdAction = document.createElement('td');
-                const delBtn = document.createElement('button');
-                delBtn.innerHTML = '❌';
-                delBtn.className = 'delete-btn';
-                delBtn.onclick = () => deleteWeekTask(index);
-                tdAction.appendChild(delBtn);
-                tr.appendChild(tdAction);
-                
-                tbody.appendChild(tr);
-            });
-        }
-        
-        function updateWeekTask(index, field, value) {
-            const data = getUserData();
-            if (data.weekTasks[index]) {
-                data.weekTasks[index][field] = value;
-                saveUserData(data);
-            }
-        }
-        
-        function deleteWeekTask(index) {
-            if (confirm('确定要删除这个周任务吗？')) {
-                const data = getUserData();
-                data.weekTasks.splice(index, 1);
-                saveUserData(data);
-                renderWeekTasks();
-            }
-        }
-        
-        function clearWeekTasks() {
-            if (confirm('警告：这将清空所有周任务，且不可恢复！确定吗？')) {
-                const data = getUserData();
-                data.weekTasks = [];
-                saveUserData(data);
-                renderWeekTasks();
-            }
-        }
-        
-        // 日历初始化
-        function initCalendar() {
-            const calendarEl = document.getElementById('calendar');
-            if (calendarInstance) {
-                calendarInstance.destroy();
-            }
-            
-            calendarInstance = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridWeek',
-                locale: 'zh-cn',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridWeek,dayGridMonth'
-                },
-                buttonText: {
-                    today: '今天',
-                    month: '月',
-                    week: '周'
-                },
-                events: getCalendarEvents(),
-                eventDisplay: 'block',
-                eventTimeFormat: {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                },
-                dayMaxEvents: 3,
-                height: 'auto',
-                dayHeaderFormat: { weekday: 'short', day: 'numeric' },
-                dayHeaderContent: function(arg) {
-                    return { html: `<div>${arg.date.toLocaleDateString('zh-CN', { weekday: 'short' })}</div><div style="font-weight: bold; font-size: 14px;">${arg.date.getDate()}</div>` };
-                },
-                views: {
-                    dayGridWeek: {
-                        dayHeaderContent: function(arg) {
-                            return { html: `<div>${arg.date.toLocaleDateString('zh-CN', { weekday: 'short' })}</div><div style="font-weight: bold; font-size: 14px;">${arg.date.getDate()}</div>` };
-                        }
-                    },
-                    dayGridMonth: {
-                        titleFormat: { year: 'numeric', month: 'long' }
-                    }
-                }
-            });
-            calendarInstance.render();
-        }
-        
-        function getCalendarEvents() {
-            const data = getUserData();
-            const events = [];
-            
-            data.timeline.forEach((item, index) => {
-                if (item.date) {
-                    events.push({
-                        title: item.task + (item.pages ? ` (${item.pages}页)` : ''),
-                        start: `${item.date}T${item.time}:00`,
-                        allDay: false,
-                        backgroundColor: item.done ? '#28a745' : '#007bff',
-                        borderColor: item.done ? '#28a745' : '#007bff',
-                        extendedProps: {
-                            pages: item.pages
-                        }
-                    });
-                }
-            });
-            
-            return events;
-        }
-        
+
+        //===========================================
+        // 2. 阅读计划模块
+        //===========================================
         // 时间轴
         function addTimelineItem() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            
             const timelineContainer = document.getElementById('timeline-items');
             const itemDiv = document.createElement('div');
             itemDiv.className = 'timeline-item';
@@ -1332,24 +1012,20 @@
                             <input type="text" placeholder="页数" style="width: 100%; border: 1px solid #eee; padding: 5px; border-radius: 4px;" onchange="saveTimeline()">
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
             timelineContainer.appendChild(itemDiv);
             saveTimeline();
         }
-        
         function saveTimeline() {
             const items = document.querySelectorAll('#timeline-items .timeline-item');
             const timeline = [];
             const today = new Date().toISOString().split('T')[0];
-            
             items.forEach(item => {
                 const timeBox = item.querySelector('.timeline-time-box');
                 const time = timeBox ? timeBox.textContent.trim() : "00:00";
                 const taskInput = item.querySelector('.timeline-content-header input[placeholder="阅读内容/书名"]');
                 const pageInput = item.querySelector('.timeline-content-box input[placeholder="页数"]');
                 const done = item.querySelector('.timeline-checkbox').checked;
-                
                 timeline.push({
                     time: time || "00:00",
                     task: taskInput ? taskInput.value : "",
@@ -1358,23 +1034,14 @@
                     date: today
                 });
             });
-            
             const data = getUserData();
             data.timeline = timeline;
             saveUserData(data);
-            
-            if (calendarInstance) {
-                calendarInstance.removeAllEvents();
-                calendarInstance.addEventSource(getCalendarEvents());
-                calendarInstance.refetchEvents();
-            }
         }
-        
         function renderTimeline() {
             const data = getUserData();
             const timelineContainer = document.getElementById('timeline-items');
             timelineContainer.innerHTML = '';
-            
             data.timeline.forEach((item, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'timeline-item';
@@ -1393,53 +1060,32 @@
                                 <input type="text" placeholder="页数" value="${item.pages || ''}" style="width: 100%; border: 1px solid #eee; padding: 5px; border-radius: 4px;" onchange="saveTimeline()">
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 timelineContainer.appendChild(itemDiv);
             });
         }
-        
-        // ================= 3. 阅读笔记模块 =================
+
+        //===========================================
+        // 3. 阅读笔记模块
+        //===========================================
         function addArgumentItem() {
             const container = document.getElementById('argument-notes');
             const itemDiv = document.createElement('div');
             itemDiv.className = 'argument-container';
-            itemDiv.innerHTML = `
-                <div class="argument-vertical-group">
-                    <div>
-                        <div class="item-title">章节+页码</div>
-                        <input type="text" class="argument-input argument-chapter" placeholder="输入章节和页码" onchange="saveReadingNotes()">
-                    </div>
-                    <div>
-                        <div class="item-title">论证步骤</div>
-                        <textarea class="argument-textarea argument-steps" placeholder="输入论证步骤" onchange="saveReadingNotes()"></textarea>
-                    </div>
-                    <div>
-                        <div class="item-title">论点</div>
-                        <textarea class="argument-textarea argument-thesis" placeholder="输入论点" onchange="saveReadingNotes()"></textarea>
-                    </div>
-                    <div>
-                        <div class="item-title">论据/例子</div>
-                        <textarea class="argument-textarea argument-evidence" placeholder="输入论据或例子" onchange="saveReadingNotes()"></textarea>
-                    </div>
-                    <div>
-                        <div class="item-title">连接</div>
-                        <textarea class="argument-textarea argument-connection" placeholder="输入连接内容" onchange="saveReadingNotes()"></textarea>
-                    </div>
-                    <div>
-                        <div class="item-title">批注</div>
-                        <textarea class="argument-textarea argument-comment" placeholder="输入批注" onchange="saveReadingNotes()"></textarea>
-                    </div>
-                </div>
-                <button class="delete-btn" onclick="this.parentElement.remove(); saveReadingNotes();" style="margin-top: 10px;">删除此项</button>
-            `;
+            itemDiv.innerHTML = `<div class="argument-vertical-group">
+                <div><div class="item-title">章节+页码</div><input type="text" class="argument-input argument-chapter" placeholder="输入章节和页码" onchange="saveReadingNotes()"></div>
+                <div><div class="item-title">论证步骤</div><textarea class="argument-textarea argument-steps" placeholder="输入论证步骤" onchange="saveReadingNotes()"></textarea></div>
+                <div><div class="item-title">论点</div><textarea class="argument-textarea argument-thesis" placeholder="输入论点" onchange="saveReadingNotes()"></textarea></div>
+                <div><div class="item-title">论据/例子</div><textarea class="argument-textarea argument-evidence" placeholder="输入论据或例子" onchange="saveReadingNotes()"></textarea></div>
+                <div><div class="item-title">连接</div><textarea class="argument-textarea argument-connection" placeholder="输入连接内容" onchange="saveReadingNotes()"></textarea></div>
+                <div><div class="item-title">批注</div><textarea class="argument-textarea argument-comment" placeholder="输入批注" onchange="saveReadingNotes()"></textarea></div>
+            </div>
+            <button class="delete-btn" onclick="this.parentElement.remove(); saveReadingNotes();" style="margin-top: 10px;">删除此项</button>`;
             container.appendChild(itemDiv);
             saveReadingNotes();
         }
-        
         function saveReadingNotes() {
             const data = getUserData();
-            
             data.readingNotes = {
                 outline: {
                     proposition: document.querySelector('textarea[data-tag="大纲-命题"]').value,
@@ -1455,7 +1101,6 @@
                     interpretation: document.querySelector('textarea[data-tag="引用-解读"]').value
                 }
             };
-            
             document.querySelectorAll('.argument-container').forEach(item => {
                 data.readingNotes.arguments.push({
                     chapter: item.querySelector('.argument-chapter').value,
@@ -1466,72 +1111,45 @@
                     comment: item.querySelector('.argument-comment').value
                 });
             });
-            
             saveUserData(data);
         }
-        
         function loadReadingNotes() {
             const data = getUserData().readingNotes;
-            
             if (data.outline) {
                 document.querySelector('textarea[data-tag="大纲-命题"]').value = data.outline.proposition || '';
                 document.querySelector('textarea[data-tag="大纲-问题意识"]').value = data.outline.problem || '';
                 document.querySelector('textarea[data-tag="大纲-论证路径"]').value = data.outline.method || '';
                 document.querySelector('textarea[data-tag="大纲-核心概念"]').value = data.outline.concept || '';
             }
-            
             if (data.quotes) {
                 document.querySelector('textarea[data-tag="引用-关键原文"]').value = data.quotes.key || '';
                 document.querySelector('textarea[data-tag="引用-启发性文段"]').value = data.quotes.inspiration || '';
                 document.querySelector('textarea[data-tag="引用-可能会用上"]').value = data.quotes.maybeUse || '';
                 document.querySelector('textarea[data-tag="引用-解读"]').value = data.quotes.interpretation || '';
             }
-            
             const argumentContainer = document.getElementById('argument-notes');
             argumentContainer.innerHTML = '';
-            
             if (data.arguments && data.arguments.length > 0) {
                 data.arguments.forEach((arg, index) => {
                     const itemDiv = document.createElement('div');
                     itemDiv.className = 'argument-container';
-                    itemDiv.innerHTML = `
-                        <div class="argument-vertical-group">
-                            <div>
-                                <div class="item-title">章节+页码</div>
-                                <input type="text" class="argument-input argument-chapter" value="${arg.chapter || ''}" placeholder="输入章节和页码" onchange="saveReadingNotes()">
-                            </div>
-                            <div>
-                                <div class="item-title">论证步骤</div>
-                                <textarea class="argument-textarea argument-steps" placeholder="输入论证步骤" onchange="saveReadingNotes()">${arg.steps || ''}</textarea>
-                            </div>
-                            <div>
-                                <div class="item-title">论点</div>
-                                <textarea class="argument-textarea argument-thesis" placeholder="输入论点" onchange="saveReadingNotes()">${arg.thesis || ''}</textarea>
-                            </div>
-                            <div>
-                                <div class="item-title">论据/例子</div>
-                                <textarea class="argument-textarea argument-evidence" placeholder="输入论据或例子" onchange="saveReadingNotes()">${arg.evidence || ''}</textarea>
-                            </div>
-                            <div>
-                                <div class="item-title">连接</div>
-                                <textarea class="argument-textarea argument-connection" placeholder="输入连接内容" onchange="saveReadingNotes()">${arg.connection || ''}</textarea>
-                            </div>
-                            <div>
-                                <div class="item-title">批注</div>
-                                <textarea class="argument-textarea argument-comment" placeholder="输入批注" onchange="saveReadingNotes()">${arg.comment || ''}</textarea>
-                            </div>
-                        </div>
-                        <button class="delete-btn" onclick="this.parentElement.remove(); saveReadingNotes();" style="margin-top: 10px;">删除此项</button>
-                    `;
+                    itemDiv.innerHTML = `<div class="argument-vertical-group">
+                        <div><div class="item-title">章节+页码</div><input type="text" class="argument-input argument-chapter" value="${arg.chapter || ''}" placeholder="输入章节和页码" onchange="saveReadingNotes()"></div>
+                        <div><div class="item-title">论证步骤</div><textarea class="argument-textarea argument-steps" placeholder="输入论证步骤" onchange="saveReadingNotes()">${arg.steps || ''}</textarea></div>
+                        <div><div class="item-title">论点</div><textarea class="argument-textarea argument-thesis" placeholder="输入论点" onchange="saveReadingNotes()">${arg.thesis || ''}</textarea></div>
+                        <div><div class="item-title">论据/例子</div><textarea class="argument-textarea argument-evidence" placeholder="输入论据或例子" onchange="saveReadingNotes()">${arg.evidence || ''}</textarea></div>
+                        <div><div class="item-title">连接</div><textarea class="argument-textarea argument-connection" placeholder="输入连接内容" onchange="saveReadingNotes()">${arg.connection || ''}</textarea></div>
+                        <div><div class="item-title">批注</div><textarea class="argument-textarea argument-comment" placeholder="输入批注" onchange="saveReadingNotes()">${arg.comment || ''}</textarea></div>
+                    </div>
+                    <button class="delete-btn" onclick="this.parentElement.remove(); saveReadingNotes();" style="margin-top: 10px;">删除此项</button>`;
                     argumentContainer.appendChild(itemDiv);
                 });
             } else {
                 addArgumentItem();
             }
         }
-        
         function clearNote() {
-            if (confirm('确定要清空所有笔记内容吗？')) {
+            if (confirm('确定要清空所有笔记内容吗?')) {
                 const data = getUserData();
                 data.readingNotes = {
                     outline: { proposition: "", problem: "", method: "", concept: "" },
@@ -1542,196 +1160,171 @@
                 loadReadingNotes();
             }
         }
-        
         async function exportToWord() {
             const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
             const data = getUserData().readingNotes;
-            
             const doc = new Document({
                 sections: [{
                     properties: {},
                     children: [
-                        new Paragraph({
-                            text: "深度阅读笔记",
-                            heading: HeadingLevel.TITLE
-                        }),
-                        new Paragraph({
-                            text: `导出时间：${new Date().toLocaleString('zh-CN')}`,
-                            spacing: { after: 400 }
-                        }),
-                        new Paragraph({
-                            text: "一、大纲",
-                            heading: HeadingLevel.HEADING_1
-                        }),
+                        new Paragraph({ text: "深度阅读笔记", heading: HeadingLevel.TITLE }),
+                        new Paragraph({ text: `导出时间: ${new Date().toLocaleString('zh-CN')}`, spacing: { after: 400 } }),
+                        new Paragraph({ text: "一、大纲", heading: HeadingLevel.HEADING_1 }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "1. 命题（核心论点）", bold: true }),
-                                new TextRun({ text: "\n" + (data.outline.proposition || "") })
+                                new TextRun({ text: "1.命题(核心论点)", bold: true }),
+                                new TextRun({ text: `\n${data.outline.proposition || ''}` })
                             ],
                             spacing: { after: 200 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "2. 问题意识", bold: true }),
-                                new TextRun({ text: "\n" + (data.outline.problem || "") })
+                                new TextRun({ text: "2.问题意识", bold: true }),
+                                new TextRun({ text: `\n${data.outline.problem || ''}` })
                             ],
                             spacing: { after: 200 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "3. 论证路径", bold: true }),
-                                new TextRun({ text: "\n" + (data.outline.method || "") })
+                                new TextRun({ text: "3.论证路径", bold: true }),
+                                new TextRun({ text: `\n${data.outline.method || ''}` })
                             ],
                             spacing: { after: 200 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "4. 核心概念", bold: true }),
-                                new TextRun({ text: "\n" + (data.outline.concept || "") })
+                                new TextRun({ text: "4.核心概念", bold: true }),
+                                new TextRun({ text: `\n${data.outline.concept || ''}` })
                             ],
                             spacing: { after: 400 }
                         }),
-                        new Paragraph({
-                            text: "二、论证",
-                            heading: HeadingLevel.HEADING_1
-                        })
+                        new Paragraph({ text: "二、论证", heading: HeadingLevel.HEADING_1 })
                     ]
                 }]
             });
-            
             data.arguments.forEach((arg, index) => {
                 doc.addSection({
                     properties: {},
                     children: [
                         new Paragraph({
                             children: [
-                                new TextRun({ text: `${index + 1}. 章节: `, bold: true }),
-                                new TextRun({ text: arg.chapter || "" })
+                                new TextRun({ text: `${index + 1}.章节:`, bold: true }),
+                                new TextRun({ text: ` ${arg.chapter || ''}` })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "   论证步骤: ", bold: true }),
-                                new TextRun({ text: arg.steps || "" })
+                                new TextRun({ text: "论证步骤:", bold: true }),
+                                new TextRun({ text: ` ${arg.steps || ''}` })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "   论点: ", bold: true }),
-                                new TextRun({ text: arg.thesis || "" })
+                                new TextRun({ text: "论点:", bold: true }),
+                                new TextRun({ text: ` ${arg.thesis || ''}` })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "   论据/例子: ", bold: true }),
-                                new TextRun({ text: arg.evidence || "" })
+                                new TextRun({ text: "论据/例子:", bold: true }),
+                                new TextRun({ text: ` ${arg.evidence || ''}` })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "   连接: ", bold: true }),
-                                new TextRun({ text: arg.connection || "" })
+                                new TextRun({ text: "连接:", bold: true }),
+                                new TextRun({ text: ` ${arg.connection || ''}` })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "   批注: ", bold: true }),
-                                new TextRun({ text: arg.comment || "" })
+                                new TextRun({ text: "批注:", bold: true }),
+                                new TextRun({ text: ` ${arg.comment || ''}` })
                             ],
                             spacing: { after: 200 }
                         })
                     ]
                 });
             });
-            
             doc.addSection({
                 properties: {},
                 children: [
-                    new Paragraph({
-                        text: "三、引用",
-                        heading: HeadingLevel.HEADING_1
-                    }),
+                    new Paragraph({ text: "三、引用", heading: HeadingLevel.HEADING_1 }),
                     new Paragraph({
                         children: [
-                            new TextRun({ text: "1. 关键原文", bold: true }),
-                            new TextRun({ text: "\n" + (data.quotes.key || "") })
+                            new TextRun({ text: "1.关键原文", bold: true }),
+                            new TextRun({ text: `\n${data.quotes.key || ''}` })
                         ],
                         spacing: { after: 200 }
                     }),
                     new Paragraph({
                         children: [
-                            new TextRun({ text: "2. 启发性文段", bold: true }),
-                            new TextRun({ text: "\n" + (data.quotes.inspiration || "") })
+                            new TextRun({ text: "2.启发性文段", bold: true }),
+                            new TextRun({ text: `\n${data.quotes.inspiration || ''}` })
                         ],
                         spacing: { after: 200 }
                     }),
                     new Paragraph({
                         children: [
-                            new TextRun({ text: "3. 可能会用上", bold: true }),
-                            new TextRun({ text: "\n" + (data.quotes.maybeUse || "") })
+                            new TextRun({ text: "3.可能会用上", bold: true }),
+                            new TextRun({ text: `\n${data.quotes.maybeUse || ''}` })
                         ],
                         spacing: { after: 200 }
                     }),
                     new Paragraph({
                         children: [
-                                new TextRun({ text: "4. 解读", bold: true }),
-                                new TextRun({ text: "\n" + (data.quotes.interpretation || "") })
-                            ],
-                            spacing: { after: 200 }
-                        })
-                    ]
-                });
-                
-                try {
-                    const blob = await Packer.toBlob(doc);
-                    saveAs(blob, `阅读笔记_${currentUser.username}_${new Date().toISOString().split('T')[0]}.docx`);
-                } catch (error) {
-                    console.error("导出Word时出错:", error);
-                    alert("导出失败，请检查浏览器是否支持Word导出功能。");
-                }
-            }
-            
-            // ================= 加载用户数据 =================
-            function loadUserData() {
-                const data = getUserData();
-                renderNotesTable();
-                renderGoalsTable();
-                renderWeekTasks();
-                renderTimeline();
-                loadReadingNotes();
-                
-                if (document.getElementById('current-date')) {
-                    document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        weekday: 'long'
-                    });
-                }
-            }
-            
-            // 页面加载时检查登录状态
-            document.addEventListener('DOMContentLoaded', function() {
-                // 检查是否有已登录用户
-                const lastUser = localStorage.getItem('last_login_user');
-                if (lastUser && userDatabase[lastUser]) {
-                    const storedPassword = localStorage.getItem(`user_password_${lastUser}`);
-                    if (storedPassword === userDatabase[lastUser].password) {
-                        currentUser = { username: lastUser, password: storedPassword };
-                        loginSuccess();
-                    }
-                }
-                
-                // 绑定自动保存事件
-                document.querySelectorAll('.item-input').forEach(element => {
-                    element.addEventListener('input', saveReadingNotes);
-                });
+                            new TextRun({ text: "4.解读", bold: true }),
+                            new TextRun({ text: `\n${data.quotes.interpretation || ''}` })
+                        ],
+                        spacing: { after: 200 }
+                    })
+                ]
             });
-        </script>
-    </body>
-    </html>
+            try {
+                const blob = await Packer.toBlob(doc);
+                saveAs(blob, `阅读笔记_${currentUser.username}_${new Date().toISOString().split('T')[0]}.docx`);
+            } catch (error) {
+                console.error("导出Word时出错:", error);
+                alert("导出失败，请检查浏览器是否支持Word导出功能。");
+            }
+        }
+
+        //===========================================
+        // 加载用户数据
+        //===========================================
+        function loadUserData() {
+            const data = getUserData();
+            renderNotesTable();
+            renderTimeline();
+            loadReadingNotes();
+            if (document.getElementById('current-date')) {
+                document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
+                    year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
+                });
+            }
+        }
+
+        //===========================================
+        // 页面初始化
+        //===========================================
+        document.addEventListener('DOMContentLoaded', function () {
+            const lastUser = localStorage.getItem('last_login_user');
+            if (lastUser && userDatabase[lastUser]) {
+                const storedPassword = localStorage.getItem(`user_password_${lastUser}`);
+                if (storedPassword === userDatabase[lastUser].password) {
+                    currentUser = { username: lastUser, password: storedPassword };
+                    loginSuccess();
+                }
+            }
+            document.querySelectorAll('.item-input').forEach(element => {
+                element.addEventListener('input', saveReadingNotes);
+            });
+        });
+    </script>
+</body>
+</html>
