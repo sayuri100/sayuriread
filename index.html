@@ -186,14 +186,12 @@
             cursor: pointer;
         }
         
-        /* 修复:阅读计划布局 */
         .plan-container {
             display: flex;
             flex-direction: column;
             gap: 30px;
         }
         
-        /* 修复:日历样式优化 */
         .calendar-container {
             height: 500px;
             margin-bottom: 30px;
@@ -249,7 +247,6 @@
             border-radius: 3px;
         }
         
-        /* 大目标管理表格 */
         .goal-management {
             margin-bottom: 30px;
         }
@@ -260,7 +257,6 @@
             margin-top: 10px;
         }
         
-        /* 修复:时间轴样式-左右分开布局 */
         .timeline-section {
             margin-top: 30px;
             position: relative;
@@ -353,7 +349,6 @@
             margin-left: 10px;
         }
         
-        /* 时间轴删除按钮 */
         .timeline-delete-btn {
             background: #ff6b6b;
             color: white;
@@ -369,7 +364,6 @@
             background: #ff5252;
         }
         
-        /* 修复:阅读笔记编辑器样式-论证部分优化 */
         .note-editor-container {
             margin-top: 20px;
         }
@@ -414,7 +408,6 @@
             resize: vertical;
         }
         
-        /* 修复:论证部分样式-横向布局 */
         .argument-container {
             margin-bottom: 20px;
             padding: 15px;
@@ -447,7 +440,6 @@
             font-family: inherit;
         }
         
-        /* 周任务管理 */
         .week-task-management {
             margin-bottom: 20px;
         }
@@ -462,7 +454,6 @@
             background: #f0f7ff;
         }
         
-        /* 删除按钮样式 */
         .delete-btn {
             background: #ff6b6b;
             color: white;
@@ -484,7 +475,6 @@
             font-size: 12px;
         }
         
-        /* 登录注册页面样式 */
         .auth-container {
             display: flex;
             width: 100%;
@@ -568,7 +558,6 @@
             display: none;
         }
         
-        /* 完成度选择框 */
         .completion-select {
             width: 120px;
             padding: 8px 12px;
@@ -577,7 +566,6 @@
             background: white;
         }
         
-        /* 周任务事件颜色指示器 */
         .color-indicator {
             display: inline-block;
             width: 12px;
@@ -586,7 +574,6 @@
             margin-right: 5px;
         }
         
-        /* 周任务管理布局优化 */
         .week-task-controls {
             display: flex;
             justify-content: space-between;
@@ -986,6 +973,7 @@
                     createdAt: new Date().toISOString()
                 };
                 localStorage.setItem('user_database', JSON.stringify(userDatabase));
+                localStorage.setItem('last_login_user', user.username);
                 
                 // 自动登录
                 currentUser = user;
@@ -2064,58 +2052,57 @@
                     new Paragraph({
                         children: [
                             new TextRun({ text: "4. 解读", bold: true }),
-                            new TextRun({ text: "\n" + (data.quotes.interpretation || "") })
-                        ],
-                        spacing: { after: 200 }
-                    })
-                ]
-            });
+                            new TextRun({ text: "spacing: { after: 200 }
+                        })
+                    ]
+                });
+            }
             
             try {
                 const blob = await Packer.toBlob(doc);
-                saveAs(blobsaveAs(blob, `阅读笔记_${currentUser.username}_${new Date().toISOString().split('T')[0]}.docx`);
-} catch (error) {
-console.error("导出Word时出错:", error);
-alert("导出失败，请检查浏览器是否支持Word导出功能。");
-}
-}
-
-// ==================== 加载用户数据 ===================
-function loadUserData() {
-const data = getUserData();
-renderNotesTable();
-renderGoalsTable();
-renderWeekTasks();
-renderTimeline();
-loadReadingNotes();
-
-if (document.getElementById('current-date')) {
-document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long'
-});
-}
-}
-
-// 页面加载时检查登录状态
-document.addEventListener('DOMContentLoaded', function() {
-// 检查是否有已登录用户
-const lastUser = localStorage.getItem('last_login_user');
-if (lastUser && userDatabase[lastUser]) {
-const storedPassword = localStorage.getItem(`user_password_${lastUser}`);
-if (storedPassword === userDatabase[lastUser].password) {
-    currentUser = { username: lastUser, password: storedPassword };
-    loginSuccess();
-}
-}
-
-// 绑定自动保存事件
-document.querySelectorAll('.item-input').forEach(element => {
-element.addEventListener('input', saveReadingNotes);
-});
-});
-</script>
+                saveAs(blob, `阅读笔记_${currentUser.username}_${new Date().toISOString().split('T')[0]}.docx`);
+            } catch (error) {
+                console.error("导出Word时出错:", error);
+                alert("导出失败，请检查浏览器是否支持Word导出功能。");
+            }
+        }
+        
+        // ==================== 加载用户数据 ===================
+        function loadUserData() {
+            const data = getUserData();
+            renderNotesTable();
+            renderGoalsTable();
+            renderWeekTasks();
+            renderTimeline();
+            loadReadingNotes();
+            
+            if (document.getElementById('current-date')) {
+                document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+            }
+        }
+        
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否有已登录用户
+            const lastUser = localStorage.getItem('last_login_user');
+            if (lastUser && userDatabase[lastUser]) {
+                const storedPassword = localStorage.getItem(`user_password_${lastUser}`);
+                if (storedPassword === userDatabase[lastUser].password) {
+                    currentUser = { username: lastUser, password: storedPassword };
+                    loginSuccess();
+                }
+            }
+            
+            // 绑定自动保存事件
+            document.querySelectorAll('.item-input').forEach(element => {
+                element.addEventListener('input', saveReadingNotes);
+            });
+        });
+    </script>
 </body>
 </html>
