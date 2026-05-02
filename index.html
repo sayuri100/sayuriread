@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old Books Note-古典书斋笔记系统</title>
+    <title>Old Books Note - 古典书斋笔记系统</title>
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
     <style>
         :root {
@@ -15,13 +15,7 @@
             --sidebar-width: 260px;
             --header-height: 70px;
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Georgia', 'Times New Roman', serif;
             background-color: var(--bg-color);
@@ -30,7 +24,6 @@
             height: 100vh;
             overflow: hidden;
         }
-        
         .sidebar {
             width: var(--sidebar-width);
             background: #fff;
@@ -40,7 +33,6 @@
             flex-direction: column;
             z-index: 10;
         }
-        
         .logo {
             text-align: center;
             margin-bottom: 30px;
@@ -49,7 +41,6 @@
             color: var(--primary-color);
             letter-spacing: 2px;
         }
-        
         .nav-item {
             padding: 12px 25px;
             cursor: pointer;
@@ -59,20 +50,17 @@
             color: #666;
             transition: all 0.3s;
         }
-        
         .nav-item:hover, .nav-item.active {
             background: var(--secondary-color);
             color: var(--text-color);
             border-right: 3px solid var(--primary-color);
         }
-        
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-        
         .top-bar {
             height: var(--header-height);
             background: #fff;
@@ -82,13 +70,11 @@
             justify-content: space-between;
             padding: 0 30px;
         }
-        
         .user-panel {
             display: flex;
             gap: 15px;
             align-items: center;
         }
-        
         .btn {
             padding: 8px 16px;
             border: 1px solid var(--border-color);
@@ -99,27 +85,15 @@
             transition: all 0.2s;
             color: var(--text-color);
         }
-        
-        .btn:hover {
-            background: var(--secondary-color);
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #4a3429;
-        }
-        
+        .btn:hover { background: var(--secondary-color); }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: #4a3429; }
         .content-area {
             flex: 1;
             padding: 20px 30px;
             overflow-y: auto;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="none" width="100" height="100"/><path d="M20,20 Q40,5 60,20 T100,20 M20,50 Q40,35 60,50 T100,50 M20,80 Q40,65 60,80 T100,80" stroke="%23e0d6cc" stroke-width="0.5" fill="none"/></svg>') repeat;
         }
-        
         .module {
             display: none;
             background: white;
@@ -130,48 +104,18 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-        
-        .module.active {
-            display: block;
-        }
-        
+        .module.active { display: block; }
         h2 {
             margin-bottom: 20px;
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 10px;
             color: var(--primary-color);
         }
-        
-        .controls {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-        
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            text-align: left;
-            vertical-align: top;
-        }
-        
-        th {
-            background: var(--secondary-color);
-            font-weight: bold;
-        }
-        
-        tr:nth-child(even) {
-            background: #fcfbfa;
-        }
-        
+        .controls { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: left; vertical-align: top; }
+        th { background: var(--secondary-color); font-weight: bold; }
+        tr:nth-child(even) { background: #fcfbfa; }
         input[type="text"], input[type="number"], textarea, select {
             border: 1px solid var(--border-color);
             padding: 8px 10px;
@@ -180,94 +124,77 @@
             border-radius: 4px;
             width: 100%;
         }
+        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
         
-        input[type="checkbox"] {
-            transform: scale(1.2);
-            cursor: pointer;
-        }
+        /* 修复：阅读计划布局 */
+        .plan-container { display: flex; flex-direction: column; gap: 30px; }
         
-        .plan-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        
-        .calendar-container {
-            height: 500px;
+        /* 修复：日历样式优化 */
+        .calendar-container { 
+            height: 500px; 
             margin-bottom: 30px;
         }
-        
-        .fc {
-            font-size: 12px;
+        .fc { 
+            font-size: 12px; 
             height: 100%;
         }
-        
-        .fc .fc-toolbar {
+        .fc .fc-toolbar { 
             margin-bottom: 1em;
             padding: 0.5em 0;
         }
-        
-        .fc .fc-toolbar-title {
-            font-size: 1.4em;
+        .fc .fc-toolbar-title { 
+            font-size: 1.4em; 
             font-weight: normal;
         }
-        
-        .fc .fc-button {
-            padding: 4px 8px;
+        .fc .fc-button { 
+            padding: 4px 8px; 
             font-size: 12px;
         }
-        
-        .fc .fc-col-header-cell {
+        .fc .fc-col-header-cell { 
             padding: 8px 2px;
             background-color: #f8f9fa;
         }
-        
-        .fc .fc-col-header-cell-cushion {
+        .fc .fc-col-header-cell-cushion { 
             font-weight: normal;
             color: var(--primary-color);
         }
-        
-        .fc-daygrid-day-frame {
-            min-height: 60px;
+        .fc-daygrid-day-frame { 
+            min-height: 60px; 
             padding: 4px;
         }
-        
-        .fc-daygrid-day-top {
+        .fc-daygrid-day-top { 
             justify-content: center;
         }
-        
-        .fc-daygrid-day-number {
+        .fc-daygrid-day-number { 
             font-size: 12px;
             font-weight: normal;
         }
-        
-        .fc-event {
+        .fc-event { 
             padding: 2px 4px;
             margin: 1px 0;
             border-radius: 3px;
         }
         
-        .goal-management {
-            margin-bottom: 30px;
+        /* 大目标管理表格 */
+        .goal-management { 
+            margin-top: 20px; 
+        }
+        .goal-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px; 
         }
         
-        .goal-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        
-        .timeline-section {
-            margin-top: 30px;
+        /* 修复：时间轴样式 - 左右分开布局 */
+        .timeline-section { 
+            margin-top: 30px; 
             position: relative;
         }
-        
         .timeline-container {
             position: relative;
             margin: 20px 0;
             padding: 0 100px;
         }
-        
         .timeline-line {
             position: absolute;
             left: 50%;
@@ -277,29 +204,20 @@
             background: var(--primary-color);
             transform: translateX(-50%);
         }
-        
         .timeline-item {
             display: flex;
             margin-bottom: 30px;
             position: relative;
-            cursor: move;
         }
-        
-        .timeline-item.dragging {
-            opacity: 0.5;
-        }
-        
         .timeline-time-side {
             flex: 0 0 45%;
             padding-right: 20px;
             text-align: right;
         }
-        
         .timeline-content-side {
             flex: 0 0 45%;
             padding-left: 20px;
         }
-        
         .timeline-dot {
             position: absolute;
             left: 50%;
@@ -311,7 +229,6 @@
             transform: translate(-50%, 0);
             z-index: 1;
         }
-        
         .timeline-time-box {
             border: 1px solid var(--border-color);
             padding: 10px 15px;
@@ -320,61 +237,38 @@
             text-align: center;
             font-weight: bold;
         }
-        
         .timeline-content-box {
             border: 1px solid var(--border-color);
             background: white;
             padding: 12px 15px;
             border-radius: 4px;
         }
-        
         .timeline-content-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
         }
-        
         .timeline-task {
             font-weight: bold;
             margin-bottom: 5px;
         }
-        
         .timeline-pages {
             color: #666;
             font-size: 12px;
         }
-        
         .timeline-checkbox {
             margin-left: 10px;
         }
         
-        .timeline-delete-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-        
-        .timeline-delete-btn:hover {
-            background: #ff5252;
-        }
-        
-        .note-editor-container {
-            margin-top: 20px;
-        }
-        
+        /* 修复：阅读笔记编辑器样式 - 论证部分优化 */
+        .note-editor-container { margin-top: 20px; }
         .note-section {
             margin-bottom: 30px;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             overflow: hidden;
         }
-        
         .section-header {
             background: #f8f9fa;
             padding: 12px 20px;
@@ -382,22 +276,18 @@
             border-bottom: 2px solid var(--primary-color);
             font-size: 1.2em;
         }
-        
         .section-content {
             padding: 20px;
         }
-        
         .section-item {
             margin-bottom: 20px;
         }
-        
         .item-title {
             font-weight: bold;
             color: var(--primary-color);
             margin-bottom: 8px;
             display: block;
         }
-        
         .item-input {
             width: 100%;
             padding: 10px;
@@ -408,6 +298,7 @@
             resize: vertical;
         }
         
+        /* 修复：论证部分样式 - 横向布局 */
         .argument-container {
             margin-bottom: 20px;
             padding: 15px;
@@ -415,13 +306,11 @@
             border-radius: 6px;
             background: #fcfcfc;
         }
-        
         .argument-vertical-group {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
-        
         .argument-textarea {
             width: 100%;
             min-height: 100px;
@@ -431,7 +320,6 @@
             font-family: inherit;
             resize: vertical;
         }
-        
         .argument-input {
             width: 100%;
             padding: 10px;
@@ -440,20 +328,20 @@
             font-family: inherit;
         }
         
+        /* 周任务管理 */
         .week-task-management {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
-        
         .week-task-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
-        
         .week-task-table th {
             background: #f0f7ff;
         }
         
+        /* 删除按钮样式 */
         .delete-btn {
             background: #ff6b6b;
             color: white;
@@ -463,24 +351,16 @@
             cursor: pointer;
             font-size: 12px;
         }
+        .delete-btn:hover { background: #ff5252; }
         
-        .delete-btn:hover {
-            background: #ff5252;
-        }
+        .tag-hint { color: #999; font-style: italic; margin-top: 5px; font-size: 12px; }
         
-        .tag-hint {
-            color: #999;
-            font-style: italic;
-            margin-top: 5px;
-            font-size: 12px;
-        }
-        
+        /* 登录注册页面样式 */
         .auth-container {
             display: flex;
             width: 100%;
             height: 100vh;
         }
-        
         .auth-left {
             flex: 1;
             background: linear-gradient(135deg, var(--primary-color) 0%, #3e2a20 100%);
@@ -491,7 +371,6 @@
             color: white;
             padding: 40px;
         }
-        
         .auth-right {
             flex: 1;
             display: flex;
@@ -499,18 +378,15 @@
             align-items: center;
             padding: 40px;
         }
-        
         .auth-form {
             width: 100%;
             max-width: 400px;
         }
-        
         .auth-tabs {
             display: flex;
             margin-bottom: 30px;
             border-bottom: 1px solid var(--border-color);
         }
-        
         .auth-tab {
             flex: 1;
             text-align: center;
@@ -518,39 +394,26 @@
             cursor: pointer;
             border-bottom: 3px solid transparent;
         }
-        
         .auth-tab.active {
             border-bottom: 3px solid var(--primary-color);
             color: var(--primary-color);
             font-weight: bold;
         }
-        
         .auth-content {
             display: none;
         }
-        
         .auth-content.active {
             display: block;
         }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="text"], input[type="password"] { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border-color); 
             border-radius: 4px;
             font-size: 16px;
         }
-        
         .error-message {
             color: #dc3545;
             font-size: 14px;
@@ -558,38 +421,13 @@
             display: none;
         }
         
+        /* 完成度选择框 */
         .completion-select {
             width: 120px;
             padding: 8px 12px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             background: white;
-        }
-        
-        .color-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
-            margin-right: 5px;
-        }
-        
-        .week-task-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .plan-container {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .week-task-calendar-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
     </style>
 </head>
@@ -641,7 +479,7 @@
                     </div>
                     <div class="form-group">
                         <label for="register-password">密码</label>
-                        <input type="password" id="register-password" placeholder="请输入密码(至少6位)">
+                        <input type="password" id="register-password" placeholder="请输入密码（至少6位）">
                         <div id="register-password-error" class="error-message">密码至少6位</div>
                     </div>
                     <div class="form-group">
@@ -654,19 +492,19 @@
             </div>
         </div>
     </div>
-    
+
     <!-- 主应用界面 -->
     <div id="app-container" style="display: none; width: 100%; height: 100%;">
         <div class="sidebar">
             <div class="logo">OLD BOOKS</div>
-            <div class="nav-item active" onclick="showModule('notes-module')">已读笔记</div>
-            <div class="nav-item" onclick="showModule('plan-module')">阅读计划</div>
-            <div class="nav-item" onclick="showModule('reading-module')">深度阅读笔记</div>
+            <div class="nav-item active" onclick="showModule('notes-module')">📝 已读笔记</div>
+            <div class="nav-item" onclick="showModule('plan-module')">📅 阅读计划</div>
+            <div class="nav-item" onclick="showModule('reading-module')">✍️ 阅读笔记</div>
             <div style="margin-top: auto; padding: 20px; font-size: 12px; color: #999; text-align: center;">
                 用户: <span id="sidebar-username"></span>
             </div>
         </div>
-        
+
         <div class="main-content">
             <div class="top-bar">
                 <h1 style="font-size: 1.5rem; color: var(--primary-color);">古典书斋笔记系统</h1>
@@ -675,17 +513,17 @@
                     <button class="btn" onclick="logout()">退出登录</button>
                 </div>
             </div>
-            
+
             <div class="content-area">
-                <!-- 模块 1: 已读笔记(Excel) -->
+                <!-- 模块1: 已读笔记 (Excel) -->
                 <div id="notes-module" class="module active">
-                    <h2>已读笔记管理</h2>
+                    <h2>📊 已读笔记管理</h2>
                     <div class="controls">
-                        <button class="btn btn-primary" onclick="addNewRow()">+ 新增记录</button>
-                        <button class="btn" onclick="exportToExcel()">导出 Excel</button>
-                        <label class="btn" for="import-file" style="margin-bottom: 0;">导入 Excel</label>
-                        <input type="file" id="import-file" accept=".xlsx,.xls" style="display: none;" onchange="importFromExcel(event)">
-                        <button class="btn" onclick="clearAllNotesData()">清空记录</button>
+                        <button class="btn btn-primary" onclick="addNewRow()">➕ 新增记录</button>
+                        <button class="btn" onclick="exportToExcel()">📥 导出 Excel</button>
+                        <label class="btn" for="import-file" style="margin-bottom: 0;">📤 导入 Excel</label>
+                        <input type="file" id="import-file" accept=".xlsx, .xls" style="display:none;" onchange="importFromExcel(event)">
+                        <button class="btn" onclick="clearAllNotesData()">🗑️ 清空记录</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table>
@@ -708,19 +546,46 @@
                             </tbody>
                         </table>
                     </div>
-                    <p style="color: #999; font-size: 12px; margin-top: 10px;">提示: 点击单元格可直接编辑，修改后数据会自动保存。</p>
+                    <p style="color: #999; font-size: 12px; margin-top: 10px;">提示：点击单元格可直接编辑，修改后数据会自动保存。</p>
                 </div>
-                
-                <!-- 模块 2: 阅读计划 -->
+
+                <!-- 模块2: 阅读计划 -->
                 <div id="plan-module" class="module">
-                    <h2>阅读计划与追踪</h2>
+                    <h2>📅 阅读计划与追踪</h2>
+                    
                     <div class="plan-container">
-                        <!-- 大目标管理 -->
-                        <div class="goal-management">
-                            <h3>大目标管理</h3>
+                        <!-- 周任务管理 -->
+                        <div class="week-task-management">
+                            <h3>📅 周任务管理</h3>
                             <div class="controls">
-                                <button class="btn btn-primary" onclick="addGoalRow()">+ 新增目标</button>
-                                <button class="btn" onclick="clearAllGoals()">清空目标</button>
+                                <button class="btn btn-primary" onclick="addWeekTask()">➕ 新增周任务</button>
+                                <button class="btn" onclick="clearWeekTasks()">🗑️ 清空周任务</button>
+                            </div>
+                            <table class="week-task-table">
+                                <thead>
+                                    <tr>
+                                        <th>星期</th>
+                                        <th>阅读内容</th>
+                                        <th>页数</th>
+                                        <th>完成状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="week-tasks-body">
+                                    <!-- 动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="calendar-container">
+                            <div id="calendar"></div>
+                        </div>
+                        
+                        <div class="goal-management">
+                            <h3>🎯 大目标管理</h3>
+                            <div class="controls">
+                                <button class="btn btn-primary" onclick="addGoalRow()">➕ 新增目标</button>
+                                <button class="btn" onclick="clearAllGoals()">🗑️ 清空目标</button>
                             </div>
                             <table class="goal-table">
                                 <thead>
@@ -736,81 +601,39 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+
+                    <div class="timeline-section">
+                        <h3>⏳ 今日阅读时间轴</h3>
+                        <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+                            当前日期: <span id="current-date"></span> | 
+                            <button class="btn" onclick="addTimelineItem()" style="padding: 5px 10px; font-size: 12px;">➕ 添加时间点</button>
+                        </p>
                         
-                        <!-- 周任务管理和日历 -->
-                        <div class="week-task-calendar-container">
-                            <!-- 周任务管理 -->
-                            <div class="week-task-management">
-                                <h3>周任务管理</h3>
-                                <div class="week-task-controls">
-                                    <div>
-                                        <button class="btn btn-primary" onclick="addWeekTask()">+ 新增周任务</button>
-                                        <button class="btn" onclick="clearWeekTasks()">清空周任务</button>
-                                    </div>
-                                    <div style="font-size: 12px; color: #666;">
-                                        <span style="display: inline-flex; align-items: center; margin-right: 10px;">
-                                            <span class="color-indicator" style="background-color: #007bff;"></span> 未完成
-                                        </span>
-                                        <span style="display: inline-flex; align-items: center; margin-right: 10px;">
-                                            <span class="color-indicator" style="background-color: #28a745;"></span> 已完成
-                                        </span>
-                                        <button class="btn" onclick="refreshCalendar()" style="font-size: 12px; padding: 4px 8px;">更新日历</button>
-                                    </div>
-                                </div>
-                                <table class="week-task-table">
-                                    <thead>
-                                        <tr>
-                                            <th>星期</th>
-                                            <th>阅读内容</th>
-                                            <th>页数</th>
-                                            <th>完成状态</th>
-                                            <th>操作</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="week-tasks-body">
-                                        <!-- 动态生成 -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- 日历容器 -->
-                            <div class="calendar-container">
-                                <div id="calendar"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- 今日阅读时间轴 -->
-                        <div class="timeline-section">
-                            <h3>今日阅读时间轴</h3>
-                            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
-                                当前日期: <span id="current-date"></span> | 
-                                <button class="btn" onclick="addTimelineItem()" style="padding: 5px 10px; font-size: 12px;">+ 添加时间点</button>
-                                <button class="btn" onclick="saveTimelineOrder()" style="padding: 5px 10px; font-size: 12px; margin-left: 10px;">保存顺序</button>
-                            </p>
-                            <div class="timeline-container">
-                                <div class="timeline-line"></div>
-                                <div id="timeline-items">
-                                    <!-- 时间轴项目动态生成 -->
-                                </div>
+                        <div class="timeline-container">
+                            <div class="timeline-line"></div>
+                            <div id="timeline-items">
+                                <!-- 时间轴项目动态生成 -->
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- 模块 3: 阅读笔记 -->
+
+                <!-- 模块3: 阅读笔记 -->
                 <div id="reading-module" class="module">
-                    <h2>深度阅读笔记</h2>
+                    <h2>✍️ 深度阅读笔记</h2>
                     <div class="controls">
-                        <button class="btn btn-primary" onclick="exportToWord()">导出 Word(.docx)</button>
-                        <button class="btn" onclick="clearNote()">清空笔记</button>
+                        <button class="btn btn-primary" onclick="exportToWord()">📄 导出 Word (.docx)</button>
+                        <button class="btn" onclick="clearNote()">🗑️ 清空笔记</button>
                     </div>
+                    
                     <div class="note-editor-container">
                         <!-- 一、大纲 -->
                         <div class="note-section">
                             <div class="section-header">一、大纲</div>
                             <div class="section-content">
                                 <div class="section-item">
-                                    <span class="item-title">1. 命题(核心论点)</span>
+                                    <span class="item-title">1. 命题（核心论点）</span>
                                     <textarea class="item-input" data-tag="大纲-命题" placeholder="输入核心论点..."></textarea>
                                 </div>
                                 <div class="section-item">
@@ -835,7 +658,7 @@
                                 <div id="argument-notes">
                                     <!-- 论证项目动态生成 -->
                                 </div>
-                                <button class="btn" onclick="addArgumentItem()" style="margin-top: 10px;">+ 添加论证项</button>
+                                <button class="btn" onclick="addArgumentItem()" style="margin-top: 10px;">➕ 添加论证项</button>
                             </div>
                         </div>
                         
@@ -862,24 +685,25 @@
                             </div>
                         </div>
                     </div>
-                    <p class="tag-hint">提示: 在对应区域输入笔记内容，系统会自动保存。导出Word时会按照标签结构格式化。</p>
+                    
+                    <p class="tag-hint">💡 提示：在对应区域输入笔记内容，系统会自动保存。导出Word时会按照标签结构格式化。</p>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@7.4.1/build/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    
     <script>
-        // ================ 用户认证系统 ================
+        // ================= 用户认证系统 =================
         let currentUser = null;
         let calendarInstance = null;
         const STORAGE_PREFIX = "reading_notes_user_";
-        let timelineDraggingItem = null;
         
-        // 用户数据库(模拟后端)
+        // 用户数据库（模拟后端）
         const userDatabase = JSON.parse(localStorage.getItem('user_database') || '{}');
         
         function showAuthTab(tab) {
@@ -919,6 +743,7 @@
                     return { username, password };
                 } else {
                     document.getElementById('login-error').style.display = 'block';
+                    return null;
                 }
             }
             return null;
@@ -944,10 +769,12 @@
                 document.getElementById('register-username-error').style.display = 'block';
                 isValid = false;
             }
+            
             if (password.length < 6) {
                 document.getElementById('register-password-error').style.display = 'block';
                 isValid = false;
             }
+            
             if (password !== confirmPassword) {
                 document.getElementById('register-confirm-error').style.display = 'block';
                 isValid = false;
@@ -973,7 +800,6 @@
                     createdAt: new Date().toISOString()
                 };
                 localStorage.setItem('user_database', JSON.stringify(userDatabase));
-                localStorage.setItem('last_login_user', user.username);
                 
                 // 自动登录
                 currentUser = user;
@@ -999,7 +825,7 @@
         function loginSuccess() {
             document.getElementById('auth-page').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
-            document.getElementById('current-user-display').textContent = '欢迎, ' + currentUser.username;
+            document.getElementById('current-user-display').textContent = `欢迎，${currentUser.username}`;
             document.getElementById('sidebar-username').textContent = currentUser.username;
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
                 year: 'numeric',
@@ -1007,9 +833,9 @@
                 day: 'numeric',
                 weekday: 'long'
             });
+            
             loadUserData();
             initCalendar();
-            initTimelineDragAndDrop();
             
             // 清空登录表单
             document.getElementById('login-username').value = '';
@@ -1020,7 +846,7 @@
         }
         
         function logout() {
-            if (confirm('确定要退出登录吗?')) {
+            if (confirm('确定要退出登录吗？')) {
                 currentUser = null;
                 document.getElementById('app-container').style.display = 'none';
                 document.getElementById('auth-page').style.display = 'flex';
@@ -1028,7 +854,7 @@
             }
         }
         
-        // ================== 数据存储 ==================
+        // ================= 数据存储 =================
         function getUserStorageKey() {
             if (!currentUser) return null;
             return `${STORAGE_PREFIX}${currentUser.username}`;
@@ -1051,6 +877,7 @@
         function getUserData() {
             const key = getUserStorageKey();
             if (!key) return getDefaultUserData();
+            
             const data = localStorage.getItem(key);
             if (data) {
                 try {
@@ -1069,10 +896,11 @@
             }
         }
         
-        // ==================== 模块切换 ====================
+        // ================= 模块切换 =================
         function showModule(moduleId) {
             document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
             document.getElementById(moduleId).classList.add('active');
             event.currentTarget.classList.add('active');
             
@@ -1085,7 +913,7 @@
         function addNewRow() {
             const data = getUserData();
             data.notes.push({
-                题目: "", 年份: "", 作者: "", 期刊: "", 主题: "",
+                题目: "", 年份: "", 作者: "", 期刊: "", 主题: "", 
                 理论方法: "", 研究问题: "", 结论: "", 展望: ""
             });
             saveUserData(data);
@@ -1099,7 +927,6 @@
             
             data.notes.forEach((row, index) => {
                 const tr = document.createElement('tr');
-                
                 Object.keys(row).forEach(key => {
                     const td = document.createElement('td');
                     const input = document.createElement('input');
@@ -1112,7 +939,7 @@
                 
                 const tdAction = document.createElement('td');
                 const delBtn = document.createElement('button');
-                delBtn.innerHTML = 'X';
+                delBtn.innerHTML = '❌';
                 delBtn.className = 'delete-btn';
                 delBtn.onclick = () => deleteNoteRow(index);
                 tdAction.appendChild(delBtn);
@@ -1131,7 +958,7 @@
         }
         
         function deleteNoteRow(index) {
-            if (confirm('确定要删除这条记录吗?')) {
+            if (confirm('确定要删除这条记录吗？')) {
                 const data = getUserData();
                 data.notes.splice(index, 1);
                 saveUserData(data);
@@ -1140,7 +967,7 @@
         }
         
         function clearAllNotesData() {
-            if (confirm('警告: 这将清空当前账户的所有已读笔记数据，且不可恢复! 确定吗?')) {
+            if (confirm('警告：这将清空当前账户的所有已读笔记数据，且不可恢复！确定吗？')) {
                 const data = getUserData();
                 data.notes = [];
                 saveUserData(data);
@@ -1169,6 +996,7 @@
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "已读笔记");
+            
             XLSX.writeFile(wb, `已读笔记_${currentUser.username}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
         }
         
@@ -1179,7 +1007,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
+                const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
                 const jsonData = XLSX.utils.sheet_to_json(worksheet);
@@ -1197,12 +1025,11 @@
                         结论: row["结论"] || row["Conclusion"] || "",
                         展望: row["展望"] || row["Future"] || ""
                     }));
-                    
                     saveUserData(userData);
                     renderNotesTable();
                     alert(`成功导入 ${jsonData.length} 条记录`);
                 } else {
-                    alert("Excel文件中未找到有效数据");
+                    alert("Excel 文件中未找到有效数据");
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -1215,7 +1042,7 @@
             const today = new Date().toISOString().split('T')[0];
             data.goals.push({
                 目标: "",
-                起止日期: today + "-" + today,
+                起止日期: today + " - " + today,
                 完成度: "未完成"
             });
             saveUserData(data);
@@ -1234,7 +1061,7 @@
                 const tdGoal = document.createElement('td');
                 const inputGoal = document.createElement('input');
                 inputGoal.type = 'text';
-                inputGoal.value = row.目标 || "";
+                inputGoal.value = row.目标 || '';
                 inputGoal.onchange = (e) => updateGoalCell(index, '目标', e.target.value);
                 tdGoal.appendChild(inputGoal);
                 tr.appendChild(tdGoal);
@@ -1243,8 +1070,8 @@
                 const tdDate = document.createElement('td');
                 const inputDate = document.createElement('input');
                 inputDate.type = 'text';
-                inputDate.value = row.起止日期 || "";
-                inputDate.placeholder = 'YYYY-MM-DD-YYYY-MM-DD';
+                inputDate.value = row.起止日期 || '';
+                inputDate.placeholder = 'YYYY-MM-DD - YYYY-MM-DD';
                 inputDate.onchange = (e) => updateGoalCell(index, '起止日期', e.target.value);
                 tdDate.appendChild(inputDate);
                 tr.appendChild(tdDate);
@@ -1273,7 +1100,7 @@
                 // 操作
                 const tdAction = document.createElement('td');
                 const delBtn = document.createElement('button');
-                delBtn.innerHTML = 'X';
+                delBtn.innerHTML = '❌';
                 delBtn.className = 'delete-btn';
                 delBtn.onclick = () => deleteGoalRow(index);
                 tdAction.appendChild(delBtn);
@@ -1292,7 +1119,7 @@
         }
         
         function deleteGoalRow(index) {
-            if (confirm('确定要删除这个目标吗?')) {
+            if (confirm('确定要删除这个目标吗？')) {
                 const data = getUserData();
                 data.goals.splice(index, 1);
                 saveUserData(data);
@@ -1301,7 +1128,7 @@
         }
         
         function clearAllGoals() {
-            if (confirm('警告: 这将清空所有大目标, 且不可恢复! 确定吗?')) {
+            if (confirm('警告：这将清空所有大目标，且不可恢复！确定吗？')) {
                 const data = getUserData();
                 data.goals = [];
                 saveUserData(data);
@@ -1310,29 +1137,13 @@
         }
         
         // 周任务管理
-        // 预定义颜色数组用于周任务
-        const taskColors = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#fd7e14', '#20c997', '#e83e8c'];
-        
-        function getTaskColor(taskContent) {
-            if (!taskContent) return taskColors[0];
-            
-            // 简单哈希函数，确保相同的任务内容总是得到相同的颜色
-            let hash = 0;
-            for (let i = 0; i < taskContent.length; i++) {
-                hash = taskContent.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            hash = Math.abs(hash);
-            return taskColors[hash % taskColors.length];
-        }
-        
         function addWeekTask() {
             const data = getUserData();
             data.weekTasks.push({
                 星期: "星期一",
                 阅读内容: "",
                 页数: "",
-                完成状态: false,
-                color: taskColors[data.weekTasks.length % taskColors.length]
+                完成状态: false
             });
             saveUserData(data);
             renderWeekTasks();
@@ -1366,11 +1177,8 @@
                 const tdContent = document.createElement('td');
                 const inputContent = document.createElement('input');
                 inputContent.type = 'text';
-                inputContent.value = task.阅读内容 || "";
-                inputContent.onchange = (e) => {
-                    updateWeekTask(index, '阅读内容', e.target.value);
-                    updateWeekTaskColor(index, e.target.value);
-                };
+                inputContent.value = task.阅读内容 || '';
+                inputContent.onchange = (e) => updateWeekTask(index, '阅读内容', e.target.value);
                 tdContent.appendChild(inputContent);
                 tr.appendChild(tdContent);
                 
@@ -1378,7 +1186,7 @@
                 const tdPages = document.createElement('td');
                 const inputPages = document.createElement('input');
                 inputPages.type = 'text';
-                inputPages.value = task.页数 || "";
+                inputPages.value = task.页数 || '';
                 inputPages.onchange = (e) => updateWeekTask(index, '页数', e.target.value);
                 tdPages.appendChild(inputPages);
                 tr.appendChild(tdPages);
@@ -1388,17 +1196,14 @@
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.checked = task.完成状态 || false;
-                checkbox.onchange = (e) => {
-                    updateWeekTask(index, '完成状态', e.target.checked);
-                    refreshCalendar(); // 更新日历显示
-                };
+                checkbox.onchange = (e) => updateWeekTask(index, '完成状态', e.target.checked);
                 tdStatus.appendChild(checkbox);
                 tr.appendChild(tdStatus);
                 
                 // 操作
                 const tdAction = document.createElement('td');
                 const delBtn = document.createElement('button');
-                delBtn.innerHTML = 'X';
+                delBtn.innerHTML = '❌';
                 delBtn.className = 'delete-btn';
                 delBtn.onclick = () => deleteWeekTask(index);
                 tdAction.appendChild(delBtn);
@@ -1413,39 +1218,24 @@
             if (data.weekTasks[index]) {
                 data.weekTasks[index][field] = value;
                 saveUserData(data);
-                
-                // 如果更新了任务内容，也更新日历
-                if (field === '阅读内容' || field === '星期') {
-                    refreshCalendar();
-                }
-            }
-        }
-        
-        function updateWeekTaskColor(index, taskContent) {
-            const data = getUserData();
-            if (data.weekTasks[index]) {
-                data.weekTasks[index].color = getTaskColor(taskContent);
-                saveUserData(data);
             }
         }
         
         function deleteWeekTask(index) {
-            if (confirm('确定要删除这个周任务吗?')) {
+            if (confirm('确定要删除这个周任务吗？')) {
                 const data = getUserData();
                 data.weekTasks.splice(index, 1);
                 saveUserData(data);
                 renderWeekTasks();
-                refreshCalendar();
             }
         }
         
         function clearWeekTasks() {
-            if (confirm('警告: 这将清空所有周任务，且不可恢复! 确定吗?')) {
+            if (confirm('警告：这将清空所有周任务，且不可恢复！确定吗？')) {
                 const data = getUserData();
                 data.weekTasks = [];
                 saveUserData(data);
                 renderWeekTasks();
-                refreshCalendar();
             }
         }
         
@@ -1482,92 +1272,51 @@
                 dayHeaderContent: function(arg) {
                     return { html: `<div>${arg.date.toLocaleDateString('zh-CN', { weekday: 'short' })}</div><div style="font-weight: bold; font-size: 14px;">${arg.date.getDate()}</div>` };
                 },
-                eventClick: function(info) {
-                    console.log('事件点击:', info.event.title);
+                views: {
+                    dayGridWeek: {
+                        dayHeaderContent: function(arg) {
+                            return { html: `<div>${arg.date.toLocaleDateString('zh-CN', { weekday: 'short' })}</div><div style="font-weight: bold; font-size: 14px;">${arg.date.getDate()}</div>` };
+                        }
+                    },
+                    dayGridMonth: {
+                        titleFormat: { year: 'numeric', month: 'long' }
+                    }
                 }
             });
-            
             calendarInstance.render();
         }
         
         function getCalendarEvents() {
             const data = getUserData();
             const events = [];
-            const today = new Date();
             
-            // 添加时间轴事件
             data.timeline.forEach((item, index) => {
                 if (item.date) {
                     events.push({
-                        id: 'timeline_' + index,
-                        title: item.task + (item.pages ? `(${item.pages}页)` : ''),
+                        title: item.task + (item.pages ? ` (${item.pages}页)` : ''),
                         start: `${item.date}T${item.time}:00`,
                         allDay: false,
                         backgroundColor: item.done ? '#28a745' : '#007bff',
                         borderColor: item.done ? '#28a745' : '#007bff',
-                        extendedProps: { 
-                            type: 'timeline',
-                            pages: item.pages 
+                        extendedProps: {
+                            pages: item.pages
                         }
                     });
-                }
-            });
-            
-            // 添加周任务事件
-            data.weekTasks.forEach((task, index) => {
-                if (task.阅读内容) {
-                    // 计算本周的日期
-                    const now = new Date();
-                    const dayOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-                    const chineseDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-                    const taskDayIndex = chineseDays.indexOf(task.星期);
-                    
-                    if (taskDayIndex !== -1) {
-                        const targetDay = new Date(now);
-                        const currentDayIndex = now.getDay();
-                        const diff = taskDayIndex - currentDayIndex;
-                        targetDay.setDate(now.getDate() + diff);
-                        
-                        const dateStr = targetDay.toISOString().split('T')[0];
-                        events.push({
-                            id: 'weektask_' + index,
-                            title: task.阅读内容 + (task.页数 ? `(${task.页数}页)` : ''),
-                            start: dateStr + 'T09:00:00',
-                            allDay: false,
-                            backgroundColor: task.完成状态 ? '#28a745' : (task.color || '#007bff'),
-                            borderColor: task.完成状态 ? '#28a745' : (task.color || '#007bff'),
-                            extendedProps: { 
-                                type: 'weektask',
-                                status: task.完成状态,
-                                pages: task.页数
-                            }
-                        });
-                    }
                 }
             });
             
             return events;
         }
         
-        function refreshCalendar() {
-            if (calendarInstance) {
-                calendarInstance.removeAllEvents();
-                calendarInstance.addEventSource(getCalendarEvents());
-                calendarInstance.refetchEvents();
-            }
-        }
-        
-        // 时间轴功能
+        // 时间轴
         function addTimelineItem() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timelineContainer = document.getElementById('timeline-items');
-            const index = timelineContainer.children.length;
             
+            const timelineContainer = document.getElementById('timeline-items');
             const itemDiv = document.createElement('div');
             itemDiv.className = 'timeline-item';
-            itemDiv.setAttribute('draggable', 'true');
             itemDiv.innerHTML = `
                 <div class="timeline-dot"></div>
                 <div class="timeline-time-side">
@@ -1576,32 +1325,17 @@
                 <div class="timeline-content-side">
                     <div class="timeline-content-box">
                         <div class="timeline-content-header">
-                            <input type="text" placeholder="阅读内容/书名" 
-                                   style="border: none; outline: none; background: transparent; flex: 1;" 
-                                   onchange="saveTimeline()">
+                            <input type="text" placeholder="阅读内容/书名" style="border: none; outline: none; background: transparent; flex: 1;" onchange="saveTimeline()">
                             <input type="checkbox" class="timeline-checkbox" onchange="saveTimeline()">
-                            <button class="timeline-delete-btn" onclick="deleteTimelineItem(this)">删除</button>
                         </div>
                         <div>
-                            <input type="text" placeholder="页数" 
-                                   style="width: 100%; border: 1px solid #eee; padding: 5px; border-radius: 4px;" 
-                                   onchange="saveTimeline()">
+                            <input type="text" placeholder="页数" style="width: 100%; border: 1px solid #eee; padding: 5px; border-radius: 4px;" onchange="saveTimeline()">
                         </div>
                     </div>
                 </div>
             `;
-            
             timelineContainer.appendChild(itemDiv);
-            initTimelineItemEvent(itemDiv);
             saveTimeline();
-        }
-        
-        function deleteTimelineItem(button) {
-            const item = button.closest('.timeline-item');
-            if (confirm('确定要删除这个时间轴项目吗?')) {
-                item.remove();
-                saveTimeline();
-            }
         }
         
         function saveTimeline() {
@@ -1609,18 +1343,18 @@
             const timeline = [];
             const today = new Date().toISOString().split('T')[0];
             
-            items.forEach((item, index) => {
+            items.forEach(item => {
                 const timeBox = item.querySelector('.timeline-time-box');
                 const time = timeBox ? timeBox.textContent.trim() : "00:00";
                 const taskInput = item.querySelector('.timeline-content-header input[placeholder="阅读内容/书名"]');
                 const pageInput = item.querySelector('.timeline-content-box input[placeholder="页数"]');
-                const checkbox = item.querySelector('.timeline-checkbox');
+                const done = item.querySelector('.timeline-checkbox').checked;
                 
                 timeline.push({
                     time: time || "00:00",
                     task: taskInput ? taskInput.value : "",
                     pages: pageInput ? pageInput.value : "",
-                    done: checkbox ? checkbox.checked : false,
+                    done: done || false,
                     date: today
                 });
             });
@@ -1636,80 +1370,6 @@
             }
         }
         
-        function initTimelineDragAndDrop() {
-            const container = document.getElementById('timeline-items');
-            if (!container) return;
-            
-            // 移除现有的拖拽事件监听器
-            const items = container.querySelectorAll('.timeline-item');
-            items.forEach(item => {
-                initTimelineItemEvent(item);
-            });
-        }
-        
-        function initTimelineItemEvent(item) {
-            item.setAttribute('draggable', 'true');
-            
-            item.addEventListener('dragstart', function(e) {
-                this.classList.add('dragging');
-                timelineDraggingItem = this;
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/html', this.innerHTML);
-            });
-            
-            item.addEventListener('dragend', function() {
-                this.classList.remove('dragging');
-                timelineDraggingItem = null;
-            });
-        }
-        
-        // 初始化拖放目标
-        document.addEventListener('DOMContentLoaded', function() {
-            const container = document.getElementById('timeline-items');
-            if (container) {
-                container.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    
-                    const afterElement = getDragAfterElement(container, e.clientY);
-                    const draggable = document.querySelector('.dragging');
-                    
-                    if (afterElement == null) {
-                        container.appendChild(draggable);
-                    } else {
-                        container.insertBefore(draggable, afterElement);
-                    }
-                });
-            }
-            
-            document.addEventListener('drop', function(e) {
-                e.preventDefault();
-                if (timelineDraggingItem) {
-                    saveTimeline();
-                }
-            });
-        });
-        
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('.timeline-item:not(.dragging)')];
-            
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
-        
-        function saveTimelineOrder() {
-            saveTimeline();
-            alert('时间轴顺序已保存！');
-        }
-        
         function renderTimeline() {
             const data = getUserData();
             const timelineContainer = document.getElementById('timeline-items');
@@ -1718,7 +1378,6 @@
             data.timeline.forEach((item, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'timeline-item';
-                itemDiv.setAttribute('draggable', 'true');
                 itemDiv.innerHTML = `
                     <div class="timeline-dot"></div>
                     <div class="timeline-time-side">
@@ -1727,27 +1386,16 @@
                     <div class="timeline-content-side">
                         <div class="timeline-content-box">
                             <div class="timeline-content-header">
-                                <input type="text" placeholder="阅读内容/书名" 
-                                       value="${item.task || ''}" 
-                                       style="border: none; outline: none; background: transparent; flex: 1;" 
-                                       onchange="saveTimeline()">
-                                <input type="checkbox" class="timeline-checkbox" 
-                                       ${item.done ? 'checked' : ''} 
-                                       onchange="saveTimeline()">
-                                <button class="timeline-delete-btn" onclick="deleteTimelineItem(this)">删除</button>
+                                <input type="text" placeholder="阅读内容/书名" value="${item.task || ''}" style="border: none; outline: none; background: transparent; flex: 1;" onchange="saveTimeline()">
+                                <input type="checkbox" class="timeline-checkbox" ${item.done ? 'checked' : ''} onchange="saveTimeline()">
                             </div>
                             <div>
-                                <input type="text" placeholder="页数" 
-                                       value="${item.pages || ''}" 
-                                       style="width: 100%; border: 1px solid #eee; padding: 5px; border-radius: 4px;" 
-                                       onchange="saveTimeline()">
+                                <input type="text" placeholder="页数" value="${item.pages || ''}" style="width: 100%; border: 1px solid #eee; padding: 5px; border-radius: 4px;" onchange="saveTimeline()">
                             </div>
                         </div>
                     </div>
                 `;
-                
                 timelineContainer.appendChild(itemDiv);
-                initTimelineItemEvent(itemDiv);
             });
         }
         
@@ -1760,33 +1408,27 @@
                 <div class="argument-vertical-group">
                     <div>
                         <div class="item-title">章节+页码</div>
-                        <input type="text" class="argument-input argument-chapter" 
-                               placeholder="输入章节和页码" onchange="saveReadingNotes()">
+                        <input type="text" class="argument-input argument-chapter" placeholder="输入章节和页码" onchange="saveReadingNotes()">
                     </div>
                     <div>
                         <div class="item-title">论证步骤</div>
-                        <textarea class="argument-textarea argument-steps" 
-                                  placeholder="输入论证步骤" onchange="saveReadingNotes()"></textarea>
+                        <textarea class="argument-textarea argument-steps" placeholder="输入论证步骤" onchange="saveReadingNotes()"></textarea>
                     </div>
                     <div>
                         <div class="item-title">论点</div>
-                        <textarea class="argument-textarea argument-thesis" 
-                                  placeholder="输入论点" onchange="saveReadingNotes()"></textarea>
+                        <textarea class="argument-textarea argument-thesis" placeholder="输入论点" onchange="saveReadingNotes()"></textarea>
                     </div>
                     <div>
                         <div class="item-title">论据/例子</div>
-                        <textarea class="argument-textarea argument-evidence" 
-                                  placeholder="输入论据或例子" onchange="saveReadingNotes()"></textarea>
+                        <textarea class="argument-textarea argument-evidence" placeholder="输入论据或例子" onchange="saveReadingNotes()"></textarea>
                     </div>
                     <div>
                         <div class="item-title">连接</div>
-                        <textarea class="argument-textarea argument-connection" 
-                                  placeholder="输入连接内容" onchange="saveReadingNotes()"></textarea>
+                        <textarea class="argument-textarea argument-connection" placeholder="输入连接内容" onchange="saveReadingNotes()"></textarea>
                     </div>
                     <div>
                         <div class="item-title">批注</div>
-                        <textarea class="argument-textarea argument-comment" 
-                                  placeholder="输入批注" onchange="saveReadingNotes()"></textarea>
+                        <textarea class="argument-textarea argument-comment" placeholder="输入批注" onchange="saveReadingNotes()"></textarea>
                     </div>
                 </div>
                 <button class="delete-btn" onclick="this.parentElement.remove(); saveReadingNotes();" style="margin-top: 10px;">删除此项</button>
@@ -1797,6 +1439,7 @@
         
         function saveReadingNotes() {
             const data = getUserData();
+            
             data.readingNotes = {
                 outline: {
                     proposition: document.querySelector('textarea[data-tag="大纲-命题"]').value,
@@ -1831,17 +1474,17 @@
             const data = getUserData().readingNotes;
             
             if (data.outline) {
-                document.querySelector('textarea[data-tag="大纲-命题"]').value = data.outline.proposition || "";
-                document.querySelector('textarea[data-tag="大纲-问题意识"]').value = data.outline.problem || "";
-                document.querySelector('textarea[data-tag="大纲-论证路径"]').value = data.outline.method || "";
-                document.querySelector('textarea[data-tag="大纲-核心概念"]').value = data.outline.concept || "";
+                document.querySelector('textarea[data-tag="大纲-命题"]').value = data.outline.proposition || '';
+                document.querySelector('textarea[data-tag="大纲-问题意识"]').value = data.outline.problem || '';
+                document.querySelector('textarea[data-tag="大纲-论证路径"]').value = data.outline.method || '';
+                document.querySelector('textarea[data-tag="大纲-核心概念"]').value = data.outline.concept || '';
             }
             
             if (data.quotes) {
-                document.querySelector('textarea[data-tag="引用-关键原文"]').value = data.quotes.key || "";
-                document.querySelector('textarea[data-tag="引用-启发性文段"]').value = data.quotes.inspiration || "";
-                document.querySelector('textarea[data-tag="引用-可能会用上"]').value = data.quotes.maybeUse || "";
-                document.querySelector('textarea[data-tag="引用-解读"]').value = data.quotes.interpretation || "";
+                document.querySelector('textarea[data-tag="引用-关键原文"]').value = data.quotes.key || '';
+                document.querySelector('textarea[data-tag="引用-启发性文段"]').value = data.quotes.inspiration || '';
+                document.querySelector('textarea[data-tag="引用-可能会用上"]').value = data.quotes.maybeUse || '';
+                document.querySelector('textarea[data-tag="引用-解读"]').value = data.quotes.interpretation || '';
             }
             
             const argumentContainer = document.getElementById('argument-notes');
@@ -1855,34 +1498,27 @@
                         <div class="argument-vertical-group">
                             <div>
                                 <div class="item-title">章节+页码</div>
-                                <input type="text" class="argument-input argument-chapter" 
-                                       value="${arg.chapter || ''}" 
-                                       placeholder="输入章节和页码" onchange="saveReadingNotes()">
+                                <input type="text" class="argument-input argument-chapter" value="${arg.chapter || ''}" placeholder="输入章节和页码" onchange="saveReadingNotes()">
                             </div>
                             <div>
                                 <div class="item-title">论证步骤</div>
-                                <textarea class="argument-textarea argument-steps" 
-                                          placeholder="输入论证步骤" onchange="saveReadingNotes()">${arg.steps || ''}</textarea>
+                                <textarea class="argument-textarea argument-steps" placeholder="输入论证步骤" onchange="saveReadingNotes()">${arg.steps || ''}</textarea>
                             </div>
                             <div>
                                 <div class="item-title">论点</div>
-                                <textarea class="argument-textarea argument-thesis" 
-                                          placeholder="输入论点" onchange="saveReadingNotes()">${arg.thesis || ''}</textarea>
+                                <textarea class="argument-textarea argument-thesis" placeholder="输入论点" onchange="saveReadingNotes()">${arg.thesis || ''}</textarea>
                             </div>
                             <div>
                                 <div class="item-title">论据/例子</div>
-                                <textarea class="argument-textarea argument-evidence" 
-                                          placeholder="输入论据或例子" onchange="saveReadingNotes()">${arg.evidence || ''}</textarea>
+                                <textarea class="argument-textarea argument-evidence" placeholder="输入论据或例子" onchange="saveReadingNotes()">${arg.evidence || ''}</textarea>
                             </div>
                             <div>
                                 <div class="item-title">连接</div>
-                                <textarea class="argument-textarea argument-connection" 
-                                          placeholder="输入连接内容" onchange="saveReadingNotes()">${arg.connection || ''}</textarea>
+                                <textarea class="argument-textarea argument-connection" placeholder="输入连接内容" onchange="saveReadingNotes()">${arg.connection || ''}</textarea>
                             </div>
                             <div>
                                 <div class="item-title">批注</div>
-                                <textarea class="argument-textarea argument-comment" 
-                                          placeholder="输入批注" onchange="saveReadingNotes()">${arg.comment || ''}</textarea>
+                                <textarea class="argument-textarea argument-comment" placeholder="输入批注" onchange="saveReadingNotes()">${arg.comment || ''}</textarea>
                             </div>
                         </div>
                         <button class="delete-btn" onclick="this.parentElement.remove(); saveReadingNotes();" style="margin-top: 10px;">删除此项</button>
@@ -1895,7 +1531,7 @@
         }
         
         function clearNote() {
-            if (confirm('确定要清空所有笔记内容吗?')) {
+            if (confirm('确定要清空所有笔记内容吗？')) {
                 const data = getUserData();
                 data.readingNotes = {
                     outline: { proposition: "", problem: "", method: "", concept: "" },
@@ -1920,7 +1556,7 @@
                             heading: HeadingLevel.TITLE
                         }),
                         new Paragraph({
-                            text: `导出时间: ${new Date().toLocaleString('zh-CN')}`,
+                            text: `导出时间：${new Date().toLocaleString('zh-CN')}`,
                             spacing: { after: 400 }
                         }),
                         new Paragraph({
@@ -1929,7 +1565,7 @@
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "1. 命题(核心论点)", bold: true }),
+                                new TextRun({ text: "1. 命题（核心论点）", bold: true }),
                                 new TextRun({ text: "\n" + (data.outline.proposition || "") })
                             ],
                             spacing: { after: 200 }
@@ -1954,20 +1590,13 @@
                                 new TextRun({ text: "\n" + (data.outline.concept || "") })
                             ],
                             spacing: { after: 400 }
+                        }),
+                        new Paragraph({
+                            text: "二、论证",
+                            heading: HeadingLevel.HEADING_1
                         })
                     ]
                 }]
-            });
-            
-            // 论证部分
-            doc.addSection({
-                properties: {},
-                children: [
-                    new Paragraph({
-                        text: "二、论证",
-                        heading: HeadingLevel.HEADING_1
-                    })
-                ]
             });
             
             data.arguments.forEach((arg, index) => {
@@ -1983,35 +1612,35 @@
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "论证步骤: ", bold: true }),
+                                new TextRun({ text: "   论证步骤: ", bold: true }),
                                 new TextRun({ text: arg.steps || "" })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "论点: ", bold: true }),
+                                new TextRun({ text: "   论点: ", bold: true }),
                                 new TextRun({ text: arg.thesis || "" })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "论据/例子: ", bold: true }),
+                                new TextRun({ text: "   论据/例子: ", bold: true }),
                                 new TextRun({ text: arg.evidence || "" })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "连接: ", bold: true }),
+                                new TextRun({ text: "   连接: ", bold: true }),
                                 new TextRun({ text: arg.connection || "" })
                             ],
                             spacing: { after: 100 }
                         }),
                         new Paragraph({
                             children: [
-                                new TextRun({ text: "批注: ", bold: true }),
+                                new TextRun({ text: "   批注: ", bold: true }),
                                 new TextRun({ text: arg.comment || "" })
                             ],
                             spacing: { after: 200 }
@@ -2020,7 +1649,6 @@
                 });
             });
             
-            // 引用部分
             doc.addSection({
                 properties: {},
                 children: [
@@ -2051,58 +1679,59 @@
                     }),
                     new Paragraph({
                         children: [
-                            new TextRun({ text: "4. 解读", bold: true }),
-                            new TextRun({ text: "spacing: { after: 200 }
+                                new TextRun({ text: "4. 解读", bold: true }),
+                                new TextRun({ text: "\n" + (data.quotes.interpretation || "") })
+                            ],
+                            spacing: { after: 200 }
                         })
                     ]
                 });
-            }
-            
-            try {
-                const blob = await Packer.toBlob(doc);
-                saveAs(blob, `阅读笔记_${currentUser.username}_${new Date().toISOString().split('T')[0]}.docx`);
-            } catch (error) {
-                console.error("导出Word时出错:", error);
-                alert("导出失败，请检查浏览器是否支持Word导出功能。");
-            }
-        }
-        
-        // ==================== 加载用户数据 ===================
-        function loadUserData() {
-            const data = getUserData();
-            renderNotesTable();
-            renderGoalsTable();
-            renderWeekTasks();
-            renderTimeline();
-            loadReadingNotes();
-            
-            if (document.getElementById('current-date')) {
-                document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    weekday: 'long'
-                });
-            }
-        }
-        
-        // 页面加载时检查登录状态
-        document.addEventListener('DOMContentLoaded', function() {
-            // 检查是否有已登录用户
-            const lastUser = localStorage.getItem('last_login_user');
-            if (lastUser && userDatabase[lastUser]) {
-                const storedPassword = localStorage.getItem(`user_password_${lastUser}`);
-                if (storedPassword === userDatabase[lastUser].password) {
-                    currentUser = { username: lastUser, password: storedPassword };
-                    loginSuccess();
+                
+                try {
+                    const blob = await Packer.toBlob(doc);
+                    saveAs(blob, `阅读笔记_${currentUser.username}_${new Date().toISOString().split('T')[0]}.docx`);
+                } catch (error) {
+                    console.error("导出Word时出错:", error);
+                    alert("导出失败，请检查浏览器是否支持Word导出功能。");
                 }
             }
             
-            // 绑定自动保存事件
-            document.querySelectorAll('.item-input').forEach(element => {
-                element.addEventListener('input', saveReadingNotes);
+            // ================= 加载用户数据 =================
+            function loadUserData() {
+                const data = getUserData();
+                renderNotesTable();
+                renderGoalsTable();
+                renderWeekTasks();
+                renderTimeline();
+                loadReadingNotes();
+                
+                if (document.getElementById('current-date')) {
+                    document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        weekday: 'long'
+                    });
+                }
+            }
+            
+            // 页面加载时检查登录状态
+            document.addEventListener('DOMContentLoaded', function() {
+                // 检查是否有已登录用户
+                const lastUser = localStorage.getItem('last_login_user');
+                if (lastUser && userDatabase[lastUser]) {
+                    const storedPassword = localStorage.getItem(`user_password_${lastUser}`);
+                    if (storedPassword === userDatabase[lastUser].password) {
+                        currentUser = { username: lastUser, password: storedPassword };
+                        loginSuccess();
+                    }
+                }
+                
+                // 绑定自动保存事件
+                document.querySelectorAll('.item-input').forEach(element => {
+                    element.addEventListener('input', saveReadingNotes);
+                });
             });
-        });
-    </script>
-</body>
-</html>
+        </script>
+    </body>
+    </html>
